@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 import unittest
 import tempfile
-import rosbag
 import os
 import time
 import logging
-import rospy
 import subprocess
+
+import rosbag
+import rospy
 
 from std_msgs.msg import Int32
 
@@ -41,7 +42,7 @@ while (True) :
         time.sleep(1)
 
 cmd = "python $(rospack find rosbag)/test/topic_publisher.py & "
-run_cmd("bag_write", cmd)
+run_cmd("topic_publisher", cmd)
 
 
 
@@ -61,7 +62,7 @@ class TestCustomFreq(unittest.TestCase):
         self.assertEqual(len(string_2), 0)
 
 cmd = "rosnode kill -a"
-run_cmd("kill", cmd)
+run_cmd("kill node", cmd)
 
 cmd = "pkill roscore"
-run_cmd("kill", cmd)
+run_cmd("kill roscore", cmd)
