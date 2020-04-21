@@ -26,6 +26,7 @@
   <depend>roscpp</depend>
   <depend>std_srvs</depend>
   <depend>xmlrpcpp</depend>
+  <depend>libyaml-cpp-dev</depend>
 
   <buildtool_depend version_gte="0.5.78">catkin</buildtool_depend>
 
