@@ -20,9 +20,6 @@ class TestCustomFreq(unittest.TestCase):
     def fname(self, name):
         return os.path.join(BAG_DIR, name)
 
-    def callback(self, data):
-        print("callback")
-
     def run_cmd(self, step, cmd):
         rospy.loginfo('[%s] %s', step, cmd)
         process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE)
@@ -33,7 +30,6 @@ class TestCustomFreq(unittest.TestCase):
         else:
             rospy.logerr('[%s] Failed: %s', step, process.returncode)
             return False
-
 
     def test_custom_freq(self):
         cmd = "roscore &"
