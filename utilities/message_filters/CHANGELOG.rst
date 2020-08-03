@@ -2,6 +2,46 @@
 Changelog for package message_filters
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.8 (2020-07-23)
+-------------------
+
+1.15.7 (2020-05-28)
+-------------------
+
+1.15.6 (2020-05-21)
+-------------------
+
+1.15.5 (2020-05-15)
+-------------------
+* clear message queue on simtime jumping back (`#1518 <https://github.com/ros/ros_comm/issues/1518>`_)
+
+1.15.4 (2020-03-19)
+-------------------
+
+1.15.3 (2020-02-28)
+-------------------
+
+1.15.2 (2020-02-25)
+-------------------
+
+1.15.1 (2020-02-24)
+-------------------
+* fix missing boost dependencies (`#1895 <https://github.com/ros/ros_comm/issues/1895>`_)
+* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
+
+1.15.0 (2020-02-21)
+-------------------
+
+1.14.4 (2020-02-20)
+-------------------
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* add overload of ApproximateTime::setInterMessageLowerBound() to set all topics to the same value (`#1860 <https://github.com/ros/ros_comm/issues/1860>`_)
+* update approximate time filter to work with Python 2 and 3 (`#1660 <https://github.com/ros/ros_comm/issues/1660>`_)
+* message_filters/__init_\_.py - Added reduce import for Python 3 compatability (`#1633 <https://github.com/ros/ros_comm/issues/1633>`_)
+* remove messages that are newer than the newly added message (`#1438 <https://github.com/ros/ros_comm/issues/1438>`_)
+* remove signals from find_package(Boost COMPONENTS ...) (`#1580 <https://github.com/ros/ros_comm/issues/1580>`_)
+* fix message_filters build issue on the template syntax (`#1483 <https://github.com/ros/ros_comm/issues/1483>`_)
+
 1.14.3 (2018-08-06)
 -------------------
 * call Subscriber::unsubscribe() in destructor (`#1434 <https://github.com/ros/ros_comm/issues/1434>`_)

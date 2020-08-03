@@ -2,6 +2,49 @@
 Changelog for package rostest
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.8 (2020-07-23)
+-------------------
+* remove dependency on rostopic from rostest package (`#2002 <https://github.com/ros/ros_comm/issues/2002>`_)
+* fix missing reload() function in Python 3 (`#1968 <https://github.com/ros/ros_comm/issues/1968>`_)
+
+1.15.7 (2020-05-28)
+-------------------
+
+1.15.6 (2020-05-21)
+-------------------
+
+1.15.5 (2020-05-15)
+-------------------
+
+1.15.4 (2020-03-19)
+-------------------
+* restrict boost dependencies to components used (`#1871 <https://github.com/ros/ros_comm/issues/1871>`_)
+
+1.15.3 (2020-02-28)
+-------------------
+
+1.15.2 (2020-02-25)
+-------------------
+
+1.15.1 (2020-02-24)
+-------------------
+* increase time limit of advertisetest/publishtest.test to reduce flakyness (`#1897 <https://github.com/ros/ros_comm/issues/1897>`_)
+* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
+
+1.15.0 (2020-02-21)
+-------------------
+* wrap rostest call to add `python` pointing to sys.executable in PATH (`#1879 <https://github.com/ros/ros_comm/issues/1879>`_)
+
+1.14.4 (2020-02-20)
+-------------------
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* more Python 3 compatibility (`#1795 <https://github.com/ros/ros_comm/issues/1795>`_)
+* rostest: add advertisetest (`#1761 <https://github.com/ros/ros_comm/issues/1761>`_)
+* fix flaky hztests (`#1661 <https://github.com/ros/ros_comm/issues/1661>`_)
+* use AnyMsg in publishtest (`#1659 <https://github.com/ros/ros_comm/issues/1659>`_)
+* fix various test problems (`#1601 <https://github.com/ros/ros_comm/issues/1601>`_)
+* invoke rostest from CMake with the PYTHON_EXECUTABLE (`#1583 <https://github.com/ros/ros_comm/issues/1583>`_)
+
 1.14.3 (2018-08-06)
 -------------------
 

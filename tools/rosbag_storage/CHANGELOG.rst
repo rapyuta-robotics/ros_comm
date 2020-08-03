@@ -2,6 +2,52 @@
 Changelog for package rosbag_storage
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.8 (2020-07-23)
+-------------------
+
+1.15.7 (2020-05-28)
+-------------------
+
+1.15.6 (2020-05-21)
+-------------------
+
+1.15.5 (2020-05-15)
+-------------------
+* fix brief description comments after members (`#1920 <https://github.com/ros/ros_comm/issues/1920>`_)
+
+1.15.4 (2020-03-19)
+-------------------
+* restrict boost dependencies to components used (`#1871 <https://github.com/ros/ros_comm/issues/1871>`_)
+
+1.15.3 (2020-02-28)
+-------------------
+
+1.15.2 (2020-02-25)
+-------------------
+
+1.15.1 (2020-02-24)
+-------------------
+
+1.15.0 (2020-02-21)
+-------------------
+
+1.14.4 (2020-02-20)
+-------------------
+* catch polymorphic exceptions by reference (`#1887 <https://github.com/ros/ros_comm/issues/1887>`_)
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* use find_library for abs path of crypto and gpgme libraries (`#1867 <https://github.com/ros/ros_comm/issues/1867>`_)
+* remove unnecessary writing to map in write only mode (`#1798 <https://github.com/ros/ros_comm/issues/1798>`_)
+* check for fclose returning 0 (`#1750 <https://github.com/ros/ros_comm/issues/1750>`_)
+* fix windows build (`#1687 <https://github.com/ros/ros_comm/issues/1687>`_)
+* move bag encryption plugins into separate library (`#1499 <https://github.com/ros/ros_comm/issues/1499>`_)
+* modernization: replaced BOOST_FOREACH with range-based for loops, used algorithm, where appropriated (`#1640 <https://github.com/ros/ros_comm/issues/1640>`_)
+* fix dangeling if-else (`#1637 <https://github.com/ros/ros_comm/issues/1637>`_)
+* fix infinite loop in rosbag buffer resize (`#1623 <https://github.com/ros/ros_comm/issues/1623>`_)
+* update CMakeLists.txt in rosbag_storage (`#1618 <https://github.com/ros/ros_comm/issues/1618>`_)
+* fix various test problems (`#1601 <https://github.com/ros/ros_comm/issues/1601>`_)
+* visibility macros update (`#1591 <https://github.com/ros/ros_comm/issues/1591>`_)
+* fix issues when built or run on Windows (`#1466 <https://github.com/ros/ros_comm/issues/1466>`_)
+
 1.14.3 (2018-08-06)
 -------------------
 

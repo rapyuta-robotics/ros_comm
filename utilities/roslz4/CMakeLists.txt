@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 
 project(roslz4)
 
@@ -54,10 +54,17 @@ set_target_properties(roslz4_py PROPERTIES
   LIBRARY_OUTPUT_DIRECTORY ${CATKIN_DEVEL_PREFIX}/${PYTHON_INSTALL_DIR}/roslz4)
 if (NOT WIN32)
   set_target_properties(roslz4_py PROPERTIES OUTPUT_NAME roslz4 PREFIX "_" SUFFIX ".so")
+  if (APPLE)
+    set_target_properties(roslz4_py PROPERTIES LINK_FLAGS "-undefined dynamic_lookup")
+  endif()
 else()
   set_target_properties(roslz4_py PROPERTIES OUTPUT_NAME _roslz4 SUFFIX ".pyd")
 endif()
-target_link_libraries(roslz4_py roslz4 ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
+if (NOT APPLE)
+  target_link_libraries(roslz4_py roslz4 ${catkin_LIBRARIES} ${PYTHON_LIBRARIES})
+else()
+  target_link_libraries(roslz4_py roslz4 ${catkin_LIBRARIES})
+endif()
 endif()
 
 # Install library
