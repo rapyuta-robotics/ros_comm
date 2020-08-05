@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.3)
+cmake_minimum_required(VERSION 3.0.2)
 project(rosbag)
 
 if(NOT WIN32)
@@ -6,7 +6,7 @@ if(NOT WIN32)
 endif()
 
 find_package(catkin REQUIRED COMPONENTS rosbag_storage rosconsole roscpp std_srvs topic_tools xmlrpcpp)
-find_package(Boost REQUIRED COMPONENTS date_time regex program_options filesystem)
+find_package(Boost REQUIRED COMPONENTS date_time filesystem program_options regex thread)
 find_package(BZip2 REQUIRED)
 find_package(yaml-cpp REQUIRED)
 

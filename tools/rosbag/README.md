@@ -17,7 +17,6 @@ rosbag record --file-name record.yaml
 # topic_name: freq(double)
 # topic_name: -1 (it will be recorded at publish freq)
 #           : 0 (it will not be recorded)
-#           : -2 (for latched topics, to keep latched topics in every bag split)
 
 # For topic name same regular expressions cli can be used: ex. "/realsense(.*)" : 0
 # [used by default rosbag](http://wiki.ros.org/rosbag/Commandline)

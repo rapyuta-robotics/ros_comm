@@ -2,6 +2,80 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.8 (2020-07-23)
+-------------------
+* fix bad relative import (still Python 2 style) (`#1973 <https://github.com/ros/ros_comm/issues/1973>`_)
+
+1.15.7 (2020-05-28)
+-------------------
+* fix NameError in launch error handling (`#1965 <https://github.com/ros/ros_comm/issues/1965>`_)
+
+1.15.6 (2020-05-21)
+-------------------
+
+1.15.5 (2020-05-15)
+-------------------
+* add --sigint-timeout and --sigterm-timeout parameters (`#1937 <https://github.com/ros/ros_comm/issues/1937>`_)
+* roslaunch-check: search dir recursively (`#1914 <https://github.com/ros/ros_comm/issues/1914>`_)
+* sort printed nodes by namespace alphabetically (`#1934 <https://github.com/ros/ros_comm/issues/1934>`_)
+* remove pycrypto import (not used) (`#1922 <https://github.com/ros/ros_comm/issues/1922>`_)
+
+1.15.4 (2020-03-19)
+-------------------
+
+1.15.3 (2020-02-28)
+-------------------
+
+1.15.2 (2020-02-25)
+-------------------
+
+1.15.1 (2020-02-24)
+-------------------
+* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
+
+1.15.0 (2020-02-21)
+-------------------
+* update test to pass with old and new yaml (`#1893 <https://github.com/ros/ros_comm/issues/1893>`_)
+
+1.14.4 (2020-02-20)
+-------------------
+* allow empty machine arg in node tag (`#1885 <https://github.com/ros/ros_comm/issues/1885>`_)
+* use double quotes for portable roslaunch-check command (`#1883 <https://github.com/ros/ros_comm/issues/1883>`_)
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* wrap env prefix with double quotes (`#1810 <https://github.com/ros/ros_comm/issues/1810>`_)
+* add ignore default args option to roslaunch-check (`#1788 <https://github.com/ros/ros_comm/issues/1788>`_)
+* add platform check for --args code path (`#1809 <https://github.com/ros/ros_comm/issues/1809>`_)
+* [Windows] workaround for Python 2 xmlrpc performance issues (`#1872 <https://github.com/ros/ros_comm/issues/1872>`_)
+* allow empty ssh password for remote launching (`#1826 <https://github.com/ros/ros_comm/issues/1826>`_)
+* [Windows] escape drive as well as path separator (`#1815 <https://github.com/ros/ros_comm/issues/1815>`_)
+* more Python 3 compatibility (`#1795 <https://github.com/ros/ros_comm/issues/1795>`_)
+* use condition attributes to specify Python 2 and 3 dependencies (`#1792 <https://github.com/ros/ros_comm/issues/1792>`_)
+* [Windows] skip `cat` related test cases on Windows build (`#1724 <https://github.com/ros/ros_comm/issues/1724>`_)
+* [Windows] use taskkill to kill process tree (`#1725 <https://github.com/ros/ros_comm/issues/1725>`_)
+* pass missing args (`#1733 <https://github.com/ros/ros_comm/issues/1733>`_)
+* fix for roslaunch-check on Python 3
+* roslaunch added --required option (`#1681 <https://github.com/ros/ros_comm/issues/1681>`_)
+* more Python 3 compatibility (`#1783 <https://github.com/ros/ros_comm/issues/1783>`_)
+* more Python 3 compatibility (`#1782 <https://github.com/ros/ros_comm/issues/1782>`_)
+* switch to yaml.safe_load(_all) to prevent YAMLLoadWarning (`#1688 <https://github.com/ros/ros_comm/issues/1688>`_)
+* fix $(dirname) for roslaunch-check (`#1624 <https://github.com/ros/ros_comm/issues/1624>`_)
+* change how commands are executed (`#1628 <https://github.com/ros/ros_comm/issues/1628>`_)
+* add option to hide summary from roslaunch output (`#1655 <https://github.com/ros/ros_comm/issues/1655>`_)
+* make roslaunch-check respect arg remappings with command line argument (`#1653 <https://github.com/ros/ros_comm/issues/1653>`_)
+* add POSIX flag for shlex.split() (`#1619 <https://github.com/ros/ros_comm/issues/1619>`_)
+* respawn if process died while checking should_respawn() (`#1590 <https://github.com/ros/ros_comm/issues/1590>`_)
+* add python prefix for python scripts when there is no .py extension (`#1589 <https://github.com/ros/ros_comm/issues/1589>`_)
+* xmlloader: use continue instead of pass for args_only (`#1540 <https://github.com/ros/ros_comm/issues/1540>`_)
+* fix various test problems (`#1601 <https://github.com/ros/ros_comm/issues/1601>`_)
+* normalize strings to utf-8 before setting as environment variable (`#1593 <https://github.com/ros/ros_comm/issues/1593>`_)
+* fix typos: awhile -> a while (`#1534 <https://github.com/ros/ros_comm/issues/1534>`_)
+* add more useful helper text here to indicate that this might be a permission error (`#1568 <https://github.com/ros/ros_comm/issues/1568>`_)
+* exclude unused args check if pass_all_args is set (`#1520 <https://github.com/ros/ros_comm/issues/1520>`_)
+* add an option in XmlLoader to only load arg tags (`#1521 <https://github.com/ros/ros_comm/issues/1521>`_)
+* update wiki.ros.org URLs (`#1536 <https://github.com/ros/ros_comm/issues/1536>`_)
+* improve exception handling when resource is not found (`#1476 <https://github.com/ros/ros_comm/issues/1476>`_)
+* fix issues when built or run on Windows (`#1466 <https://github.com/ros/ros_comm/issues/1466>`_)
+
 1.14.3 (2018-08-06)
 -------------------
 

@@ -2,6 +2,56 @@
 Changelog for package rosgraph
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.8 (2020-07-23)
+-------------------
+
+1.15.7 (2020-05-28)
+-------------------
+
+1.15.6 (2020-05-21)
+-------------------
+
+1.15.5 (2020-05-15)
+-------------------
+
+1.15.4 (2020-03-19)
+-------------------
+
+1.15.3 (2020-02-28)
+-------------------
+
+1.15.2 (2020-02-25)
+-------------------
+* add timestamp formatting for rosconsole (`#1892 <https://github.com/ros/ros_comm/issues/1892>`_)
+
+1.15.1 (2020-02-24)
+-------------------
+* use setuptools instead of distutils (`#1870 <https://github.com/ros/ros_comm/issues/1870>`_)
+
+1.15.0 (2020-02-21)
+-------------------
+
+1.14.4 (2020-02-20)
+-------------------
+* add default ROS_MASTER_URI (`#1666 <https://github.com/ros/ros_comm/issues/1666>`_)
+* fix test which fails on Noetic (`#1891 <https://github.com/ros/ros_comm/issues/1891>`_)
+* bump CMake minimum version to avoid CMP0048 warning (`#1869 <https://github.com/ros/ros_comm/issues/1869>`_)
+* [Windows] Python 3 compatibility (`#1819 <https://github.com/ros/ros_comm/issues/1819>`_)
+* fix escape sequences in regular expressions (`#1837 <https://github.com/ros/ros_comm/issues/1837>`_)
+* fix RospyLogger findCaller arguments in Python 3.8 (`#1838 <https://github.com/ros/ros_comm/issues/1838>`_)
+* [Windows] make test code to be more portable (`#1726 <https://github.com/ros/ros_comm/issues/1726>`_)
+* fix Coverity forward null (`#1787 <https://github.com/ros/ros_comm/issues/1787>`_)
+* make log config from rosgraph optional (`#1797 <https://github.com/ros/ros_comm/issues/1797>`_)
+* use condition attributes to specify Python 2 and 3 dependencies (`#1792 <https://github.com/ros/ros_comm/issues/1792>`_)
+* add is_legal_remap() to rosgraph to make remap-detection more precise (`#1683 <https://github.com/ros/ros_comm/issues/1683>`_)
+* more Python 3 compatibility (`#1783 <https://github.com/ros/ros_comm/issues/1783>`_)
+* more Python 3 compatibility (`#1782 <https://github.com/ros/ros_comm/issues/1782>`_)
+* switch to yaml.safe_load(_all) to prevent YAMLLoadWarning (`#1688 <https://github.com/ros/ros_comm/issues/1688>`_)
+* use urlparse for parsing the port, whick makes ipv6 possible (`#1698 <https://github.com/ros/ros_comm/issues/1698>`_)
+* fix paths (and regex for paths) comparison issues (`#1592 <https://github.com/ros/ros_comm/issues/1592>`_)
+* fix various test problems (`#1601 <https://github.com/ros/ros_comm/issues/1601>`_)
+* fix typos: awhile -> a while (`#1534 <https://github.com/ros/ros_comm/issues/1534>`_)
+
 1.14.3 (2018-08-06)
 -------------------
 

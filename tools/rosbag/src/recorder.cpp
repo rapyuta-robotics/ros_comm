@@ -349,6 +349,19 @@ void Recorder::doQueue(const ros::MessageEvent<topic_tools::ShapeShifter const>&
         queue_->push(out);
         queue_size_ += out.msg->size();
         
+        if (options_.repeat_latched)
+        {
+            ros::M_string::const_iterator it = out.connection_header->find("latching");
+            if ((it != out.connection_header->end()) && (it->second == "1"))
+            {
+                ros::M_string::const_iterator it2 = out.connection_header->find("callerid");
+                if (it2 != out.connection_header->end())
+                {
+                    latched_msgs_.insert({{subscriber->getTopic(), it2->second}, out});
+                }
+            }
+        }
+
         // Check to see if buffer has been exceeded
         while (options_.buffer_size > 0 && queue_size_ > options_.buffer_size) {
             OutgoingMessage drop = queue_->front();
@@ -418,7 +431,7 @@ void Recorder::snapshotTrigger(std_msgs::Empty::ConstPtr trigger) {
     (void)trigger;
     updateFilenames();
     
-    ROS_INFO("Triggered snapshot recording with name %s.", target_filename_.c_str());
+    ROS_INFO("Triggered snapshot recording with name '%s'.", target_filename_.c_str());
     
     {
         boost::mutex::scoped_lock lock(queue_mutex_);
@@ -438,12 +451,24 @@ void Recorder::startWriting() {
     try {
         bag_.open(write_filename_, bagmode::Write);
     }
-    catch (rosbag::BagException e) {
+    catch (const rosbag::BagException& e) {
         ROS_ERROR("Error writing: %s", e.what());
         exit_code_ = 1;
         ros::shutdown();
     }
-    ROS_INFO("Recording to %s.", target_filename_.c_str());
+    ROS_INFO("Recording to '%s'.", target_filename_.c_str());
+
+    if (options_.repeat_latched)
+    {
+        // Start each new bag file with copies of all latched messages.
+        ros::Time now = ros::Time::now();
+        for (auto const& out : latched_msgs_)
+        {
+            // Overwrite the original receipt time, otherwise the new bag will
+            // have a gap before the new messages start.
+            bag_.write(out.second.topic, now, *out.second.msg);
+        }
+    }
 
     if (options_.publish)
     {
@@ -454,14 +479,7 @@ void Recorder::startWriting() {
 }
 
 void Recorder::stopWriting() {
-    for (const auto& topic : options_.custom_record_freq)
-    {
-        if (topic.second == ros::Duration(-2))
-        {
-            currently_recording_.erase(topic.first);
-        }
-    }
-    ROS_INFO("Closing %s.", target_filename_.c_str());
+    ROS_INFO("Closing '%s'.", target_filename_.c_str());
     bag_.close();
     rename(write_filename_.c_str(), target_filename_.c_str());
 }
@@ -542,7 +560,7 @@ void Recorder::doRecord() {
     {
         checkDisk();
     }
-    catch (rosbag::BagException &ex)
+    catch (const rosbag::BagException& ex)
     {
         ROS_ERROR_STREAM(ex.what());
         exit_code_ = 1;
@@ -567,11 +585,7 @@ void Recorder::doRecord() {
                 break;
             }
             boost::xtime xt;
-#if BOOST_VERSION >= 105000
             boost::xtime_get(&xt, boost::TIME_UTC_);
-#else
-            boost::xtime_get(&xt, boost::TIME_UTC);
-#endif
             xt.nsec += 250000000;
             queue_condition_.timed_wait(lock, xt);
             if (checkDuration(ros::Time::now()))
@@ -600,7 +614,7 @@ void Recorder::doRecord() {
             if (scheduledCheckDisk() && checkLogging())
                 bag_.write(out.topic, out.time, *out.msg, out.connection_header);
         }
-        catch (rosbag::BagException &ex)
+        catch (const rosbag::BagException& ex)
         {
             ROS_ERROR_STREAM(ex.what());
             exit_code_ = 1;
@@ -633,7 +647,7 @@ void Recorder::doRecordSnapshotter() {
         try {
             bag_.open(write_filename, bagmode::Write);
         }
-        catch (rosbag::BagException ex) {
+        catch (const rosbag::BagException& ex) {
             ROS_ERROR("Error writing: %s", ex.what());
             return;
         }
@@ -730,13 +744,13 @@ bool Recorder::checkDisk() {
     free_space = (unsigned long long) (fiData.f_bsize) * (unsigned long long) (fiData.f_bavail);
     if (free_space < options_.min_space)
     {
-        ROS_ERROR("Less than %s of space free on disk with %s.  Disabling recording.", options_.min_space_str.c_str(), bag_.getFileName().c_str());
+        ROS_ERROR("Less than %s of space free on disk with '%s'.  Disabling recording.", options_.min_space_str.c_str(), bag_.getFileName().c_str());
         writing_enabled_ = false;
         return false;
     }
     else if (free_space < 5 * options_.min_space)
     {
-        ROS_WARN("Less than 5 x %s of space free on disk with %s.", options_.min_space_str.c_str(), bag_.getFileName().c_str());
+        ROS_WARN("Less than 5 x %s of space free on disk with '%s'.", options_.min_space_str.c_str(), bag_.getFileName().c_str());
     }
     else
     {
@@ -750,7 +764,7 @@ bool Recorder::checkDisk() {
     {
         info = boost::filesystem::space(p);
     }
-    catch (boost::filesystem::filesystem_error &e) 
+    catch (const boost::filesystem::filesystem_error& e) 
     { 
         ROS_WARN("Failed to check filesystem stats [%s].", e.what());
         writing_enabled_ = false;
@@ -763,7 +777,7 @@ bool Recorder::checkDisk() {
     }
     else if (info.available < 5 * options_.min_space)
     {
-        ROS_WARN("Less than 5 x %s of space free on disk with %s.", options_.min_space_str.c_str(), bag_.getFileName().c_str());
+        ROS_WARN("Less than 5 x %s of space free on disk with '%s'.", options_.min_space_str.c_str(), bag_.getFileName().c_str());
         writing_enabled_ = true;
     }
     else
