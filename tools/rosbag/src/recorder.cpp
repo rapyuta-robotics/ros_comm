@@ -354,7 +354,6 @@ void Recorder::doQueue(const ros::MessageEvent<topic_tools::ShapeShifter const>&
             ros::M_string::const_iterator it = out.connection_header->find("latching");
             if ((it != out.connection_header->end()) && (it->second == "1"))
             {
-                ROS_INFO_STREAM(subscriber->getTopic());
                 ros::M_string::const_iterator it2 = out.connection_header->find("callerid");
                 if (it2 != out.connection_header->end())
                 {
