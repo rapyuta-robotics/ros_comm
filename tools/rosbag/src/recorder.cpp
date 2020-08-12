@@ -123,6 +123,7 @@ Recorder::Recorder(RecorderOptions const& options) :
     exit_code_(0),
     queue_size_(0),
     split_count_(0),
+    split_bag_(false),
     writing_enabled_(true)
 {
 }
@@ -196,7 +197,12 @@ int Recorder::run() {
     else
         record_thread = boost::thread(boost::bind(&Recorder::doRecord, this));
 
+    ros::Subscriber split_sub;
 
+    if (options_.split)
+    {
+        split_sub = nh.subscribe<std_msgs::Empty>("split_bag", 100, boost::bind(&Recorder::manual_split, this, _1));
+    }
 
     ros::Timer check_master_timer;
     if (options_.record_all || options_.regex || (options_.node != std::string("")) || !options_.custom_record_freq.empty())
@@ -443,6 +449,11 @@ void Recorder::snapshotTrigger(std_msgs::Empty::ConstPtr trigger) {
     queue_condition_.notify_all();
 }
 
+void Recorder::manual_split(std_msgs::Empty::ConstPtr msg) {
+    (void)msg;
+    split_bag_ = true;
+}
+
 void Recorder::startWriting() {
     bag_.setCompression(options_.compression);
     bag_.setChunkThreshold(options_.chunk_size);
@@ -501,6 +512,15 @@ void Recorder::checkNumSplits()
     }
 }
 
+void Recorder::split(ros::Duration start_increment)
+{
+    stopWriting();
+    split_count_++;
+    checkNumSplits();
+    start_time_ += start_increment;
+    startWriting();
+}
+
 bool Recorder::checkSize()
 {
     if (options_.max_size > 0)
@@ -509,10 +529,7 @@ bool Recorder::checkSize()
         {
             if (options_.split)
             {
-                stopWriting();
-                split_count_++;
-                checkNumSplits();
-                startWriting();
+                split();
             } else {
                 ros::shutdown();
                 return true;
@@ -532,11 +549,7 @@ bool Recorder::checkDuration(const ros::Time& t)
             {
                 while (start_time_ + options_.max_duration < t)
                 {
-                    stopWriting();
-                    split_count_++;
-                    checkNumSplits();
-                    start_time_ += options_.max_duration;
-                    startWriting();
+                    split(options_.max_duration);
                 }
             } else {
                 ros::shutdown();
@@ -608,6 +621,11 @@ void Recorder::doRecord() {
 
         if (checkDuration(out.time))
             break;
+        
+        if (split_bag_) {
+            split();
+            split_bag_ = false;
+        }
 
         try
         {
