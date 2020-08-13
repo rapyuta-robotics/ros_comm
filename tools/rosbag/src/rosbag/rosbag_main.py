@@ -85,7 +85,7 @@ def record_cmd(argv):
     parser.add_option("-o", "--output-prefix", dest="prefix",        default=None,  action="store",               help="prepend PREFIX to beginning of bag name (name will always end with date stamp)")
     parser.add_option("-O", "--output-name",   dest="name",          default=None,  action="store",               help="record to bag with name NAME.bag")
     parser.add_option("-f", "--file-name",     dest="file_name",     default=None,  action="store",               help="file with custom freq")
-    parser.add_option(      "--split",         dest="split",         default=False, callback=handle_split, action="callback",    help="split the bag when maximum size or duration is reached, or by publishing to /split_bag")
+    parser.add_option(      "--split",         dest="split",         default=False, callback=handle_split, action="callback",    help="split the bag when maximum size or duration is reached, or by publishing to split_bag")
     parser.add_option(      "--max-splits",    dest="max_splits",                   type='int',   action="store", help="Keep a maximum of N bag files, when reaching the maximum erase the oldest one to keep a constant number of files.", metavar="MAX_SPLITS")
     parser.add_option(      "--size",          dest="size",                         type='int',   action="store", help="record a bag of maximum size SIZE MB. (Default: infinite)", metavar="SIZE")
     parser.add_option(      "--duration",      dest="duration",                     type='string',action="store", help="record a bag of maximum duration DURATION in seconds, unless 'm', or 'h' is appended.", metavar="DURATION")
