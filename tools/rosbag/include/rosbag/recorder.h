@@ -146,10 +146,12 @@ private:
     bool checkDisk();
 
     void snapshotTrigger(std_msgs::Empty::ConstPtr trigger);
+    void manual_split(std_msgs::Empty::ConstPtr msg);
     //    void doQueue(topic_tools::ShapeShifter::ConstPtr msg, std::string const& topic, boost::shared_ptr<ros::Subscriber> subscriber, boost::shared_ptr<int> count);
     void doQueue(const ros::MessageEvent<topic_tools::ShapeShifter const>& msg_event, std::string const& topic, boost::shared_ptr<ros::Subscriber> subscriber, boost::shared_ptr<int> count);
     void doRecord();
     void checkNumSplits();
+    void split(ros::Duration start_increment = ros::Duration(0));
     bool checkSize();
     bool checkDuration(const ros::Time&);
     void doRecordSnapshotter();
@@ -183,6 +185,7 @@ private:
     uint64_t                      max_queue_size_;       //!< max queue size
 
     uint64_t                      split_count_;          //!< split count
+    bool                          split_bag_;
 
     std::queue<OutgoingQueue>     queue_queue_;          //!< queue of queues to be used by the snapshot recorders
 
