@@ -137,8 +137,8 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
 
       for (YAML::const_iterator it = custom_freq_config.begin(); it!=custom_freq_config.end(); ++it)
       {
-        if (opts.custom_record_blacklist(it->first.as<std::string>()) != opts.custom_record_blacklist.end() ||
-                  opts.custom_record_whitelist(it->first.as<std::string>()) != opts.custom_record_whitelist.end()) 
+        if (opts.custom_record_blacklist.find(it->first.as<std::string>()) != opts.custom_record_blacklist.end() ||
+                  opts.custom_record_whitelist.find(it->first.as<std::string>()) != opts.custom_record_whitelist.end()) 
         {
             ROS_WARN("Duplicate topic in file, Topic name:= %s ; Topic will be recorded on the basis of first entry",
                     it->first.as<std::string>().c_str());
