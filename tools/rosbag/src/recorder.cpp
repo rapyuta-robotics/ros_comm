@@ -258,18 +258,22 @@ bool Recorder::shouldSubscribeToTopic(std::string const& topic, bool from_node) 
         return false;
     }
 
-    for (const auto& it : options_.custom_record_whitelist) {
+    for (const auto& it : options_.custom_record_whitelist) 
+    {
         boost::regex e(it.first);
         boost::smatch what;
-        if (boost::regex_match(topic, what, e, boost::match_extra)) {
+        if (boost::regex_match(topic, what, e, boost::match_extra)) 
+        {
             options_.custom_record_whitelist[topic] = it.second;
             return true;
         }
     }
-    for (const auto& it : options_.custom_record_blacklist) {
+    for (const auto& it : options_.custom_record_blacklist) 
+    {
         boost::regex e(it.first);
         boost::smatch what;
-        if (boost::regex_match(topic, what, e, boost::match_extra)) {
+        if (boost::regex_match(topic, what, e, boost::match_extra)) 
+        {
             options_.custom_record_blacklist[topic] = it.second;
             return false;
         }

@@ -120,11 +120,6 @@ struct ROSBAG_DECL RecorderOptions
     std::unordered_map<std::string, ros::Duration> custom_record_blacklist;
 
     std::vector<std::string> topics;
-
-    inline bool isTopicInCustom(const std::string str) {
-        return (custom_record_blacklist.find(str) != custom_record_blacklist.end() ||
-               custom_record_whitelist.find(str) != custom_record_whitelist.end());
-    }
 };
 
 class ROSBAG_DECL Recorder
