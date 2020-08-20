@@ -110,8 +110,7 @@ RecorderOptions::RecorderOptions() :
     max_duration(-1.0),
     node(""),
     min_space(1024 * 1024 * 1024),
-    min_space_str("1G"),
-    custom_record_freq({})
+    min_space_str("1G")
 {
 }
 
@@ -161,7 +160,8 @@ int Recorder::run() {
     queue_ = new std::queue<OutgoingMessage>;
 
     // Subscribe to each topic
-    if (!options_.regex && options_.custom_record_freq.empty()) 
+    // custom whitelist is here since it can contain regex
+    if (!options_.regex && options_.custom_record_whitelist.empty()) 
     {
         for (string const& topic : options_.topics) 
         {
@@ -205,8 +205,8 @@ int Recorder::run() {
     }
 
     ros::Timer check_master_timer;
-    if (options_.record_all || options_.regex || (options_.node != std::string("")) || !options_.custom_record_freq.empty())
-    {
+    if (options_.record_all || options_.regex || (options_.node != std::string("")) ||
+            !options_.custom_record_whitelist.empty() || !options_.custom_record_blacklist.empty()) {
         // check for master first
         doCheckMaster(ros::TimerEvent(), nh);
         check_master_timer = nh.createTimer(ros::Duration(1.0), boost::bind(&Recorder::doCheckMaster, this, _1, boost::ref(nh)));
@@ -252,31 +252,26 @@ bool Recorder::isSubscribed(string const& topic) const {
 
 bool Recorder::shouldSubscribeToTopic(std::string const& topic, bool from_node) {
     // ignore already known topics
-    if (isSubscribed(topic)) 
+    if (isSubscribed(topic) || 
+            options_.custom_record_blacklist.find(topic) != options_.custom_record_blacklist.end()) 
     {
         return false;
     }
 
-    if (!options_.custom_record_freq.empty()) 
-    {
-        // Treat the topics as regular expressions
-        for(const auto& regex_str : options_.topics)
-        {
-            boost::regex e(regex_str);
-            boost::smatch what;
-            if (options_.custom_record_freq.find(regex_str) != options_.custom_record_freq.end() &&
-                boost::regex_match(topic, what, e, boost::match_extra))
-            {
-                if (options_.custom_record_freq[regex_str] == ros::Duration(-1))
-                {
-                    return false;
-                }
-                else
-                {
-                    options_.custom_record_freq[topic] = options_.custom_record_freq[regex_str];
-                    return true;
-                }
-            }
+    for (const auto& it : options_.custom_record_whitelist) {
+        boost::regex e(it.first);
+        boost::smatch what;
+        if (boost::regex_match(topic, what, e, boost::match_extra)) {
+            options_.custom_record_whitelist[topic] = it.second;
+            return true;
+        }
+    }
+    for (const auto& it : options_.custom_record_blacklist) {
+        boost::regex e(it.first);
+        boost::smatch what;
+        if (boost::regex_match(topic, what, e, boost::match_extra)) {
+            options_.custom_record_blacklist[topic] = it.second;
+            return false;
         }
     }
     // subtract exclusion regex, if any
@@ -299,8 +294,22 @@ bool Recorder::shouldSubscribeToTopic(std::string const& topic, bool from_node) 
             });
     }
 
-    return std::find(std::begin(options_.topics), std::end(options_.topics), topic)
-	    != std::end(options_.topics);
+    return std::find_if(std::begin(options_.topics), std::end(options_.topics),
+                   [blacklist = &options_.custom_record_blacklist, whitelist = &options_.custom_record_whitelist, topic](
+                           std::string& topic_arg) {
+                       if (topic == topic_arg) 
+                       {
+                           return true;
+                       } 
+                       else 
+                       {
+                           if (!blacklist->empty() || !whitelist->empty()) 
+                           {
+                               blacklist->emplace(topic, ros::Duration(-1));
+                           }
+                           return false;
+                       }
+                   }) != std::end(options_.topics);
 }
 
 template<class T>
@@ -323,9 +332,9 @@ void Recorder::doQueue(const ros::MessageEvent<topic_tools::ShapeShifter const>&
     Time rectime = Time::now();
     std::string topic_name = subscriber->getTopic();
 
-    if (options_.custom_record_freq.find(topic_name) != options_.custom_record_freq.end()) 
+    if (options_.custom_record_whitelist.find(topic_name) != options_.custom_record_whitelist.end()) 
     {
-        ros::Duration interval = options_.custom_record_freq.at(topic_name);
+        ros::Duration interval = options_.custom_record_whitelist.at(topic_name);
         std::unordered_map<std::string, ros::Time>::iterator it = topic_time_catcher_.find(topic_name);
         if(it == topic_time_catcher_.end())
         {
@@ -490,7 +499,7 @@ void Recorder::startWriting() {
 }
 
 void Recorder::stopWriting() {
-    for (const auto& topic : options_.custom_record_freq)
+    for (const auto& topic : options_.custom_record_whitelist)
     {
         if (topic.second == ros::Duration(-2))
         {

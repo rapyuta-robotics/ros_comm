@@ -116,9 +116,15 @@ struct ROSBAG_DECL RecorderOptions
     unsigned long long min_space;
     std::string min_space_str;
     ros::TransportHints transport_hints;
-    std::unordered_map<std::string, ros::Duration>    custom_record_freq;
+    std::unordered_map<std::string, ros::Duration> custom_record_whitelist;
+    std::unordered_map<std::string, ros::Duration> custom_record_blacklist;
 
     std::vector<std::string> topics;
+
+    inline bool isTopicInCustom(const std::string str) {
+        return (custom_record_blacklist.find(str) != custom_record_blacklist.end() ||
+               custom_record_whitelist.find(str) != custom_record_whitelist.end());
+    }
 };
 
 class ROSBAG_DECL Recorder
