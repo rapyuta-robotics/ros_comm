@@ -298,22 +298,23 @@ bool Recorder::shouldSubscribeToTopic(std::string const& topic, bool from_node) 
             });
     }
 
-    return std::find_if(std::begin(options_.topics), std::end(options_.topics),
-                   [blacklist = &options_.custom_record_blacklist, whitelist = &options_.custom_record_whitelist, topic](
-                           std::string& topic_arg) {
-                       if (topic == topic_arg) 
-                       {
-                           return true;
-                       } 
-                       else 
-                       {
-                           if (!blacklist->empty() || !whitelist->empty()) 
-                           {
-                               blacklist->emplace(topic, ros::Duration(-1));
-                           }
-                           return false;
-                       }
-                   }) != std::end(options_.topics);
+    return std::any_of(
+            std::begin(options_.topics), std::end(options_.topics),
+            [blacklist = &options_.custom_record_blacklist, whitelist = &options_.custom_record_whitelist, topic](
+                    std::string& topic_arg) {
+                if (topic == topic_arg) 
+                {
+                    return true;
+                } 
+                else 
+                {
+                    if (!blacklist->empty() || !whitelist->empty()) 
+                    {
+                        blacklist->emplace(topic, ros::Duration(-1));
+                    }
+                    return false;
+                }
+            });
 }
 
 template<class T>
