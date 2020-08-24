@@ -137,29 +137,31 @@ rosbag::RecorderOptions parseOptions(int argc, char** argv) {
 
       for (YAML::const_iterator it = custom_freq_config.begin(); it!=custom_freq_config.end(); ++it)
       {
-        if (!opts.custom_record_freq.empty() && opts.custom_record_freq.find(it->first.as<std::string>())!=opts.custom_record_freq.end())
+        if (opts.custom_record_blacklist.find(it->first.as<std::string>()) != opts.custom_record_blacklist.end() ||
+                  opts.custom_record_whitelist.find(it->first.as<std::string>()) != opts.custom_record_whitelist.end()) 
         {
-          ROS_WARN("Duplicate topic in file, Topic name:= %s ; Topic will be recorded on the basis of first entry", it->first.as<std::string>().c_str());
-          continue;
+            ROS_WARN("Duplicate topic in file, Topic name:= %s ; Topic will be recorded on the basis of first entry",
+                    it->first.as<std::string>().c_str());
+            continue;
         }
         double freq = it->second.as<double>();
         opts.topics.push_back(it->first.as<std::string>());
 
         if (freq == 0)
         {
-            opts.custom_record_freq.emplace(it->first.as<std::string>(), ros::Duration(-1));
+            opts.custom_record_blacklist.emplace(it->first.as<std::string>(), ros::Duration(-1));
         }
         else if (freq == -1)
         {
-            opts.custom_record_freq.emplace(it->first.as<std::string>(), ros::Duration(0));
+            opts.custom_record_whitelist.emplace(it->first.as<std::string>(), ros::Duration(0));
         }
         else if (freq == -2)
         {
-            opts.custom_record_freq.emplace(it->first.as<std::string>(), ros::Duration(-2));
-        }       
+            opts.custom_record_whitelist.emplace(it->first.as<std::string>(), ros::Duration(-2));
+        }
         else
         {
-            opts.custom_record_freq.emplace(it->first.as<std::string>(), ros::Duration(double(1)/freq));
+            opts.custom_record_whitelist.emplace(it->first.as<std::string>(), ros::Duration(double(1)/freq));
         }
       }
     }
