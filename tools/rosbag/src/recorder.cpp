@@ -653,7 +653,6 @@ void Recorder::doRecord() {
 
         boost::unique_lock<boost::mutex> split_lock(split_mutex_);
         split_condition_.wait(split_lock, [this]() { return !split_requested_; });
-        split_lock.unlock();
         try
         {
             if (scheduledCheckDisk() && checkLogging())
@@ -665,6 +664,7 @@ void Recorder::doRecord() {
             exit_code_ = 1;
             break;
         }
+        split_lock.unlock();
     }
 
     stopWriting();
