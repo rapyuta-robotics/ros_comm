@@ -465,7 +465,8 @@ void Recorder::snapshotTrigger(std_msgs::Empty::ConstPtr trigger) {
 }
 
 bool Recorder::manual_split(
-        [[maybe_unused]] std_srvs::Empty::Request& req, [[maybe_unused]] std_srvs::Empty::Response& res) {
+        [[maybe_unused]] std_srvs::Empty::Request& req, [[maybe_unused]] std_srvs::Empty::Response& res) 
+{
     boost::unique_lock<boost::mutex> lock(split_mutex_);
     split_requested_ = true;
     split();
