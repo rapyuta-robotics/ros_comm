@@ -466,9 +466,12 @@ void Recorder::snapshotTrigger(std_msgs::Empty::ConstPtr trigger) {
 
 bool Recorder::manual_split(
         [[maybe_unused]] std_srvs::Empty::Request& req, [[maybe_unused]] std_srvs::Empty::Response& res) {
+    boost::unique_lock<boost::mutex> lock(split_mutex_);
     split_requested_ = true;
     split();
     split_requested_ = false;
+    lock.unlock();
+    split_condition_.notify_all();
     return true;
 }
 
@@ -647,9 +650,12 @@ void Recorder::doRecord() {
         if (checkDuration(out.time))
             break;
 
+        boost::unique_lock<boost::mutex> split_lock(split_mutex_);
+        split_condition_.wait(split_lock, [this]() { return !split_requested_; });
+        split_lock.unlock();
         try
         {
-            if (scheduledCheckDisk() && checkLogging() && !split_requested_)
+            if (scheduledCheckDisk() && checkLogging())
                 bag_.write(out.topic, out.time, *out.msg, out.connection_header);
         }
         catch (const rosbag::BagException& ex)

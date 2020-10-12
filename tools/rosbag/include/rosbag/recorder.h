@@ -188,6 +188,8 @@ private:
 
     uint64_t                      split_count_;          //!< split count
     bool                          split_requested_;
+    boost::mutex                  split_mutex_;
+    boost::condition_variable_any split_condition_;  //!< conditional variable for queue
 
     std::queue<OutgoingQueue>     queue_queue_;          //!< queue of queues to be used by the snapshot recorders
 
