@@ -12,6 +12,13 @@ rosbag record --file-name record.yaml
 ## param 
 * --file-name: file which has topics for custom recording
 
+## services
+* Split rosbag
+    * service_name: split_bag
+    * type: std_srvs/Empty
+    * description: call the service to create a split forcefully
+
+
 ## example:- record.yaml
 ```yaml
 # topic_name: freq(double)

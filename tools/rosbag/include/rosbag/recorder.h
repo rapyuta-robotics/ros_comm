@@ -56,6 +56,7 @@
 #include <ros/ros.h>
 #include <ros/time.h>
 
+#include <std_srvs/Empty.h>
 #include <std_msgs/Empty.h>
 #include <std_msgs/String.h>
 #include <topic_tools/shape_shifter.h>
@@ -147,7 +148,7 @@ private:
     bool checkDisk();
 
     void snapshotTrigger(std_msgs::Empty::ConstPtr trigger);
-    void manual_split(std_msgs::Empty::ConstPtr msg);
+    bool manual_split(std_srvs::Empty::Request& req, std_srvs::Empty::Response& res);
     //    void doQueue(topic_tools::ShapeShifter::ConstPtr msg, std::string const& topic, boost::shared_ptr<ros::Subscriber> subscriber, boost::shared_ptr<int> count);
     void doQueue(const ros::MessageEvent<topic_tools::ShapeShifter const>& msg_event, std::string const& topic, boost::shared_ptr<ros::Subscriber> subscriber, boost::shared_ptr<int> count);
     void doRecord();
@@ -186,7 +187,9 @@ private:
     uint64_t                      max_queue_size_;       //!< max queue size
 
     uint64_t                      split_count_;          //!< split count
-    bool                          split_bag_;
+    bool                          split_requested_;
+    boost::mutex                  split_mutex_;
+    boost::condition_variable_any split_condition_;      //!< conditional variable for split
 
     std::queue<OutgoingQueue>     queue_queue_;          //!< queue of queues to be used by the snapshot recorders
 

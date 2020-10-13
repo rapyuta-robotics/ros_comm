@@ -122,7 +122,7 @@ Recorder::Recorder(RecorderOptions const& options) :
     exit_code_(0),
     queue_size_(0),
     split_count_(0),
-    split_bag_(false),
+    split_requested_(false),
     writing_enabled_(true)
 {
 }
@@ -198,10 +198,11 @@ int Recorder::run() {
         record_thread = boost::thread(boost::bind(&Recorder::doRecord, this));
 
     ros::Subscriber split_sub;
+    ros::ServiceServer split_service;
 
     if (options_.split)
     {
-        split_sub = nh.subscribe<std_msgs::Empty>("split_bag", 100, boost::bind(&Recorder::manual_split, this, _1));
+        split_service = nh.advertiseService("split_bag", &Recorder::manual_split, this);
     }
 
     ros::Timer check_master_timer;
@@ -463,9 +464,16 @@ void Recorder::snapshotTrigger(std_msgs::Empty::ConstPtr trigger) {
     queue_condition_.notify_all();
 }
 
-void Recorder::manual_split(std_msgs::Empty::ConstPtr msg) {
-    (void)msg;
-    split_bag_ = true;
+bool Recorder::manual_split(
+        [[maybe_unused]] std_srvs::Empty::Request& req, [[maybe_unused]] std_srvs::Empty::Response& res) 
+{
+    boost::unique_lock<boost::mutex> lock(split_mutex_);
+    split_requested_ = true;
+    split();
+    split_requested_ = false;
+    lock.unlock();
+    split_condition_.notify_all();
+    return true;
 }
 
 void Recorder::startWriting() {
@@ -642,12 +650,9 @@ void Recorder::doRecord() {
 
         if (checkDuration(out.time))
             break;
-        
-        if (split_bag_) {
-            split();
-            split_bag_ = false;
-        }
 
+        boost::unique_lock<boost::mutex> split_lock(split_mutex_);
+        split_condition_.wait(split_lock, [this]() { return !split_requested_; });
         try
         {
             if (scheduledCheckDisk() && checkLogging())
@@ -659,6 +664,7 @@ void Recorder::doRecord() {
             exit_code_ = 1;
             break;
         }
+        split_lock.unlock();
     }
 
     stopWriting();
