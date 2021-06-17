@@ -2,6 +2,23 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.11 (2021-04-06)
+--------------------
+
+1.15.10 (2021-03-18)
+--------------------
+* Fix AttributeError isAlive (`#2092 <https://github.com/ros/ros_comm/issues/2092>`_)
+* Contributors: Brutus The Tschiepel
+
+1.15.9 (2020-10-16)
+-------------------
+* Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
+* Fix handling of single quotes in command arguments on Windows (`#2051 <https://github.com/ros/ros_comm/issues/2051>`_)
+* Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
+* Clearer error message (`#2035 <https://github.com/ros/ros_comm/issues/2035>`_)
+* Ignore underscores when parsing literal numeric values for Python 3 compatibility (`#2022 <https://github.com/ros/ros_comm/issues/2022>`_)
+* Contributors: Andreas Vinter-Hviid, Jochen Sprickerhof, Sean Yen, Shane Loretz, tomoya
+
 1.15.8 (2020-07-23)
 -------------------
 * fix bad relative import (still Python 2 style) (`#1973 <https://github.com/ros/ros_comm/issues/1973>`_)

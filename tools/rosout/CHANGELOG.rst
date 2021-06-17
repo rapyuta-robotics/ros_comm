@@ -2,6 +2,18 @@
 Changelog for package rosout
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.15.11 (2021-04-06)
+--------------------
+
+1.15.10 (2021-03-18)
+--------------------
+
+1.15.9 (2020-10-16)
+-------------------
+* Update maintainers (`#2075 <https://github.com/ros/ros_comm/issues/2075>`_)
+* Fix spelling (`#2066 <https://github.com/ros/ros_comm/issues/2066>`_)
+* Contributors: Shane Loretz, tomoya
+
 1.15.8 (2020-07-23)
 -------------------
 

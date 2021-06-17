@@ -109,7 +109,7 @@ void PlayerOptions::check() {
 
 Player::Player(PlayerOptions const& options) :
     options_(options),
-    paused_(false),
+    paused_(options.start_paused),
     // If we were given a list of topics to pause on, then go into that mode
     // by default (it can be toggled later via 't' from the keyboard).
     pause_for_topics_(options_.pause_topics.size() > 0),
@@ -212,7 +212,7 @@ void Player::publish() {
         ops.datatype = ros::message_traits::datatype<topic_tools::ShapeShifter>();
         ops.helper = boost::make_shared<ros::SubscriptionCallbackHelperT<
             const ros::MessageEvent<topic_tools::ShapeShifter const> &> >(
-                boost::bind(&Player::updateRateTopicTime, this, _1));
+                boost::bind(&Player::updateRateTopicTime, this, boost::placeholders::_1));
 
         rate_control_sub_ = node_handle_.subscribe(ops);
 
@@ -225,8 +225,6 @@ void Player::publish() {
     std::cout << " done." << std::endl;
 
     std::cout << std::endl << "Hit space to toggle paused, or 's' to step." << std::endl;
-
-    paused_ = options_.start_paused;
 
     // Publish last message from latch topics if the options_.time > 0.0:
     if (options_.time > 0.0) {

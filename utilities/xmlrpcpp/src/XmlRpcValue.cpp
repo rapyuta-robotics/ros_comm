@@ -14,6 +14,8 @@
 #endif
 
 #include <sstream>
+#include <mutex>
+#include <vector>
 
 namespace XmlRpc {
 
@@ -610,7 +612,28 @@ namespace XmlRpc {
       default:           break;
       case TypeBoolean:  os << _value.asBool; break;
       case TypeInt:      os << _value.asInt; break;
-      case TypeDouble:   os << _value.asDouble; break;
+      case TypeDouble:
+        {
+          static std::once_flag once;
+          char buf[128]; // Should be long enough
+          int required_size = std::snprintf(buf, sizeof(buf)-1,
+                                getDoubleFormat().c_str(), _value.asDouble);
+          if (required_size < 0) {
+            std::call_once(once,
+              [](){XmlRpcUtil::error("Failed to format with %s", getDoubleFormat().c_str());});
+            os << _value.asDouble;
+          } else if (required_size < static_cast<int>(sizeof(buf))) {
+            buf[sizeof(buf)-1] = 0;
+            os << buf;
+          } else { // required_size >= static_cast<int>(sizeof(buf)
+            std::vector<char> required_buf(required_size+1);
+            std::snprintf(required_buf.data(), required_size,
+              getDoubleFormat().c_str(), _value.asDouble);
+            required_buf[required_size] = 0;
+            os << required_buf.data();
+          }
+          break;
+        }
       case TypeString:   os << *_value.asString; break;
       case TypeDateTime:
         {

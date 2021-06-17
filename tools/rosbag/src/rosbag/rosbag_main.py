@@ -72,6 +72,12 @@ def _stop_process(signum, frame, old_handler, process):
         old_handler(signum, frame)
 
 
+def _send_process_sigint(signum, frame, old_handler, process):
+    process.send_signal(signal.SIGINT)
+    if old_handler:
+        old_handler(signum, frame)
+
+
 def record_cmd(argv):
     parser = optparse.OptionParser(usage="rosbag record TOPIC1 [TOPIC2 TOPIC3 ...]",
                                    description="Record a bag file with the contents of specified topics.",
@@ -143,6 +149,12 @@ def record_cmd(argv):
         signal.SIGTERM,
         lambda signum, frame: _stop_process(signum, frame, old_handler, process)
     )
+
+    old_handler = signal.signal(
+        signal.SIGINT,
+        lambda signum, frame: _send_process_sigint(signum, frame, old_handler, process)
+    )
+
     # Better way of handling it than os.execv
     # This makes sure stdin handles are passed to the process.
     process = subprocess.Popen(cmd)
@@ -296,6 +308,12 @@ def play_cmd(argv):
         signal.SIGTERM,
         lambda signum, frame: _stop_process(signum, frame, old_handler, process)
     )
+
+    old_handler = signal.signal(
+        signal.SIGINT,
+        lambda signum, frame: _send_process_sigint(signum, frame, old_handler, process)
+    )
+
     # Better way of handling it than os.execv
     # This makes sure stdin handles are passed to the process.
     process = subprocess.Popen(cmd)
@@ -539,11 +557,11 @@ def check_cmd(argv):
         for r in rules_left:
             if r.new_class is None:
                 print('The message type %s appears to have moved.  Please enter the type to migrate it to.' % r.old_class._type)
-                new_type = raw_input('>')
+                new_type = input('>')
                 new_class = roslib.message.get_message_class(new_type)
                 while new_class is None:
                     print("\'%s\' could not be found in your system.  Please make sure it is built." % new_type)
-                    new_type = raw_input('>')
+                    new_type = input('>')
                     new_class = roslib.message.get_message_class(new_type)
                 new_rule = mm.make_update_rule(r.old_class, new_class)
                 R = new_rule(mm, 'GENERATED.' + new_rule.__name__)

@@ -157,7 +157,7 @@ class TCPServer(object):
             except ConnectionAbortedError:
                 continue
             except IOError as e:
-                (e_errno, msg) = e.args
+                (e_errno, msg, *_) = e.args
                 if e_errno == errno.EINTR: #interrupted system call
                     continue
                 if not self.is_shutdown:
@@ -263,7 +263,7 @@ class TCPROSServer(object):
     
     def __init__(self, port=0):
         """
-        Constructur
+        Constructor
         @param port: port number to bind to (default 0/any)
         @type  port: int
         """
@@ -314,7 +314,7 @@ class TCPROSServer(object):
         @type  sock: socket.socket
         @param client_addr: client address
         @type  client_addr: (str, int)
-        @raise TransportInitError: If transport cannot be succesfully initialized
+        @raise TransportInitError: If transport cannot be successfully initialized
         """
         #TODOXXX:rewrite this logic so it is possible to create TCPROSTransport object first, set its protocol,
         #and then use that to do the writing
@@ -817,8 +817,8 @@ class TCPROSTransport(Transport):
                 except DeserializationError as e:
                     #TODO: how should we handle reconnect in this case?
                     
-                    logerr("[%s] error deserializing incoming request: %s"%self.name, str(e))
-                    rospyerr("[%s] error deserializing incoming request: %s"%self.name, traceback.format_exc())
+                    logerr("[%s] error deserializing incoming request: %s"%(self.name, str(e)))
+                    rospyerr("[%s] error deserializing incoming request: %s"%(self.name, traceback.format_exc()))
                 except:
                     # in many cases this will be a normal hangup, but log internally
                     try:
@@ -847,4 +847,3 @@ class TCPROSTransport(Transport):
             finally:
                 self.socket = self.read_buff = self.write_buff = self.protocol = None
                 super(TCPROSTransport, self).close()
-

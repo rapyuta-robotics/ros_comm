@@ -136,7 +136,7 @@ int Recorder::run() {
     if (options_.topics.size() == 0) {
         // Make sure limit is not specified with automatic topic subscription
         if (options_.limit > 0) {
-            fprintf(stderr, "Specifing a count is not valid with automatic topic subscription.\n");
+            fprintf(stderr, "Specifying a count is not valid with automatic topic subscription.\n");
             return 1;
         }
 
@@ -189,13 +189,55 @@ int Recorder::run() {
     boost::thread record_thread;
     if (options_.snapshot)
     {
-        record_thread = boost::thread(boost::bind(&Recorder::doRecordSnapshotter, this));
+        record_thread = boost::thread([this]() {
+          try
+          {
+            this->doRecordSnapshotter();
+          }
+          catch (const rosbag::BagException& ex)
+          {
+            ROS_ERROR_STREAM(ex.what());
+            exit_code_ = 1;
+          }
+          catch (const std::exception& ex)
+          {
+            ROS_ERROR_STREAM(ex.what());
+            exit_code_ = 2;
+          }
+          catch (...)
+          {
+            ROS_ERROR_STREAM("Unknown exception thrown while recording bag, exiting.");
+            exit_code_ = 3;
+          }
+        });
 
         // Subscribe to the snapshot trigger
-        trigger_sub = nh.subscribe<std_msgs::Empty>("snapshot_trigger", 100, boost::bind(&Recorder::snapshotTrigger, this, _1));
+        trigger_sub = nh.subscribe<std_msgs::Empty>("snapshot_trigger", 100, boost::bind(&Recorder::snapshotTrigger, this, boost::placeholders::_1));
     }
     else
-        record_thread = boost::thread(boost::bind(&Recorder::doRecord, this));
+    {
+        record_thread = boost::thread([this]() {
+          try
+          {
+            this->doRecord();
+          }
+          catch (const rosbag::BagException& ex)
+          {
+            ROS_ERROR_STREAM(ex.what());
+            exit_code_ = 1;
+          }
+          catch (const std::exception& ex)
+          {
+            ROS_ERROR_STREAM(ex.what());
+            exit_code_ = 2;
+          }
+          catch (...)
+          {
+            ROS_ERROR_STREAM("Unknown exception thrown while recording bag, exiting.");
+            exit_code_ = 3;
+          }
+        });
+    }
 
     ros::Subscriber split_sub;
     ros::ServiceServer split_service;
@@ -210,7 +252,7 @@ int Recorder::run() {
             !options_.custom_record_whitelist.empty() || !options_.custom_record_blacklist.empty()) {
         // check for master first
         doCheckMaster(ros::TimerEvent(), nh);
-        check_master_timer = nh.createTimer(ros::Duration(1.0), boost::bind(&Recorder::doCheckMaster, this, _1, boost::ref(nh)));
+        check_master_timer = nh.createTimer(ros::Duration(1.0), boost::bind(&Recorder::doCheckMaster, this, boost::placeholders::_1, boost::ref(nh)));
     }
 
     ros::AsyncSpinner s(10);
@@ -237,7 +279,7 @@ shared_ptr<ros::Subscriber> Recorder::subscribe(string const& topic) {
     ops.datatype = ros::message_traits::datatype<topic_tools::ShapeShifter>();
     ops.helper = boost::make_shared<ros::SubscriptionCallbackHelperT<
         const ros::MessageEvent<topic_tools::ShapeShifter const> &> >(
-            boost::bind(&Recorder::doQueue, this, _1, topic, sub, count));
+            boost::bind(&Recorder::doQueue, this, boost::placeholders::_1, topic, sub, count));
     ops.transport_hints = options_.transport_hints;
     *sub = nh.subscribe(ops);
 
