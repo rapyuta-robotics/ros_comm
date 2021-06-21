@@ -156,6 +156,7 @@ private:
     void split(ros::Duration start_increment = ros::Duration(0));
     bool checkSize();
     bool checkDuration(const ros::Time&);
+    void checkManualTrigger(const ros::Time&);
     void doRecordSnapshotter();
     void doCheckMaster(ros::TimerEvent const& e, ros::NodeHandle& node_handle);
 
@@ -187,7 +188,7 @@ private:
     uint64_t                      max_queue_size_;       //!< max queue size
 
     uint64_t                      split_count_;          //!< split count
-    bool                          split_requested_;
+    std::atomic_bool              split_requested_;
     boost::mutex                  split_mutex_;
     boost::condition_variable_any split_condition_;      //!< conditional variable for split
 
