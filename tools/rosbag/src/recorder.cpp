@@ -511,10 +511,8 @@ bool Recorder::manual_split(
 {
     boost::unique_lock<boost::mutex> lock(split_mutex_);
     split_requested_ = true;
-    split();
-    split_requested_ = false;
-    lock.unlock();
-    split_condition_.notify_all();
+    // this callback thread waits until a bag split is initiated
+    split_condition_.wait(lock, [this]() { return !split_requested_; });
     return true;
 }
 
@@ -590,6 +588,11 @@ void Recorder::split(ros::Duration start_increment)
     checkNumSplits();
     start_time_ += start_increment;
     startWriting();
+    {
+        boost::unique_lock<boost::mutex> lock(split_mutex_);
+        split_requested_ = false;
+        split_condition_.notify_all();
+    }
 }
 
 bool Recorder::checkSize()
@@ -631,6 +634,12 @@ bool Recorder::checkDuration(const ros::Time& t)
     return false;
 }
 
+void Recorder::checkManualTrigger(const ros::Time& t) {
+    if (options_.split && split_requested_) {
+        // split and increment the start time
+        split(t - start_time_);
+    }
+}
 
 //! Thread that actually does writing to file.
 void Recorder::doRecord() {
@@ -672,6 +681,7 @@ void Recorder::doRecord() {
             boost::xtime_get(&xt, boost::TIME_UTC_);
             xt.nsec += 250000000;
             queue_condition_.timed_wait(lock, xt);
+            checkManualTrigger(ros::Time::now()); // split when manual trigger is called even if queue is empty
             if (checkDuration(ros::Time::now()))
             {
                 finished = true;
@@ -693,8 +703,8 @@ void Recorder::doRecord() {
         if (checkDuration(out.time))
             break;
 
-        boost::unique_lock<boost::mutex> split_lock(split_mutex_);
-        split_condition_.wait(split_lock, [this]() { return !split_requested_; });
+        checkManualTrigger(out.time);
+    
         try
         {
             if (scheduledCheckDisk() && checkLogging())
@@ -706,7 +716,6 @@ void Recorder::doRecord() {
             exit_code_ = 1;
             break;
         }
-        split_lock.unlock();
     }
 
     stopWriting();
