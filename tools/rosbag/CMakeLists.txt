@@ -16,12 +16,12 @@ catkin_python_setup()
 add_definitions(-D_FILE_OFFSET_BITS=64)
 
 include_directories(include ${catkin_INCLUDE_DIRS} ${Boost_INCLUDE_DIRS}
-  ${BZIP2_INCLUDE_DIR} ${YAML_CPP_INCLUDE_DIR}
+  ${BZIP2_INCLUDE_DIR}
 )
 
 catkin_package(
   LIBRARIES rosbag
-  INCLUDE_DIRS include ${YAML_CPP_INCLUDE_DIR}
+  INCLUDE_DIRS include
   CATKIN_DEPENDS rosbag_storage rosconsole roscpp std_srvs topic_tools xmlrpcpp)
 
 add_library(rosbag
