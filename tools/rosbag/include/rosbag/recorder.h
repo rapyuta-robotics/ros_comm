@@ -154,7 +154,7 @@ private:
     void doRecord();
     void checkNumSplits();
     void split(ros::Duration start_increment = ros::Duration(0));
-    bool checkSize();
+    bool checkSize(const ros::Time&);
     bool checkDuration(const ros::Time&);
     void checkManualTrigger(const ros::Time&);
     void doRecordSnapshotter();
