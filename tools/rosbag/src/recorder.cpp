@@ -595,7 +595,7 @@ void Recorder::split(ros::Duration start_increment)
     }
 }
 
-bool Recorder::checkSize()
+bool Recorder::checkSize(const ros::Time& t)
 {
     if (options_.max_size > 0)
     {
@@ -603,7 +603,7 @@ bool Recorder::checkSize()
         {
             if (options_.split)
             {
-                split();
+                split(t - start_time_));
             } else {
                 ros::shutdown();
                 return true;
@@ -697,7 +697,7 @@ void Recorder::doRecord() {
         
         lock.release()->unlock();
         
-        if (checkSize())
+        if (checkSize(out.time))
             break;
 
         if (checkDuration(out.time))
