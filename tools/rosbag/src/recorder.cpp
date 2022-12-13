@@ -603,7 +603,7 @@ bool Recorder::checkSize(const ros::Time& t)
         {
             if (options_.split)
             {
-                split(t - start_time_));
+                split(t - start_time_);
             } else {
                 ros::shutdown();
                 return true;
