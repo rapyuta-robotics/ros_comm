@@ -507,10 +507,11 @@ void Recorder::snapshotTrigger(std_msgs::Empty::ConstPtr trigger) {
 }
 
 bool Recorder::manual_split(
-        [[maybe_unused]] std_srvs::Empty::Request& req, [[maybe_unused]] std_srvs::Empty::Response& res) 
+        rosbag::SplitBag::Request& req, [[maybe_unused]] rosbag::SplitBag::Response& res)
 {
     boost::unique_lock<boost::mutex> lock(split_mutex_);
     split_requested_ = true;
+    split_filename_ = req.filename;
     // this callback thread waits until a bag split is initiated
     split_condition_.wait(lock, [this]() { return !split_requested_; });
     return true;
@@ -558,10 +559,19 @@ void Recorder::stopWriting() {
         {
             currently_recording_.erase(topic.first);
         }
-    }    
-    ROS_INFO("Closing '%s'.", target_filename_.c_str());
+    }
+    std::string target_filename = target_filename_;
+    {
+        boost::unique_lock<boost::mutex> lock(split_mutex_);
+        if (!split_filename_.empty())
+        {
+            target_filename = split_filename_;
+            split_filename_.clear();
+        }
+    }
+    ROS_INFO("Closing '%s'.", target_filename.c_str());
     bag_.close();
-    rename(write_filename_.c_str(), target_filename_.c_str());
+    rename(write_filename_.c_str(), target_filename.c_str());
 }
 
 void Recorder::checkNumSplits()

@@ -5,12 +5,16 @@ if(NOT WIN32)
   set_directory_properties(PROPERTIES COMPILE_OPTIONS "-Wall;-Wextra")
 endif()
 
-find_package(catkin REQUIRED COMPONENTS rosbag_storage rosconsole roscpp std_srvs topic_tools xmlrpcpp)
+find_package(catkin REQUIRED COMPONENTS rosbag_storage rosconsole roscpp std_srvs topic_tools xmlrpcpp message_generation)
 find_package(Boost REQUIRED COMPONENTS date_time filesystem program_options regex thread)
 find_package(BZip2 REQUIRED)
 find_package(yaml-cpp REQUIRED)
 
 catkin_python_setup()
+
+add_service_files(FILES SplitBag.srv)
+
+generate_messages()
 
 # Support large bags (>2GB) on 32-bit systems
 add_definitions(-D_FILE_OFFSET_BITS=64)
@@ -32,6 +36,8 @@ add_library(rosbag
 target_link_libraries(rosbag ${catkin_LIBRARIES} ${Boost_LIBRARIES}
   ${BZIP2_LIBRARIES} ${YAML_CPP_LIBRARIES}
 )
+
+add_dependencies(rosbag ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 add_executable(record src/record.cpp)
 target_link_libraries(record rosbag)
