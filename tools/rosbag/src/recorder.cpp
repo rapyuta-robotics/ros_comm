@@ -565,8 +565,9 @@ void Recorder::stopWriting() {
         boost::unique_lock<boost::mutex> lock(split_mutex_);
         if (!split_filename_.empty())
         {
-            target_filename = split_filename_;
-            split_filename_.clear();
+            const auto idx = target_filename.rfind('/');
+            target_filename = idx != std::string::npos ? target_filename.substr(0, idx + 1) : "";
+            target_filename += split_filename_;
         }
     }
     ROS_INFO("Closing '%s'.", target_filename.c_str());
@@ -576,6 +577,15 @@ void Recorder::stopWriting() {
 
 void Recorder::checkNumSplits()
 {
+    {
+        // don't count specific split filenames towards max limit
+        boost::unique_lock<boost::mutex> lock(split_mutex_);
+        if (!split_filename_.empty())
+        {
+            return;
+        }
+    }
+    
     if(options_.max_splits>0)
     {
         current_files_.push_back(target_filename_);
@@ -601,6 +611,7 @@ void Recorder::split(ros::Duration start_increment)
     {
         boost::unique_lock<boost::mutex> lock(split_mutex_);
         split_requested_ = false;
+        split_filename_.clear();
         split_condition_.notify_all();
     }
 }
