@@ -128,6 +128,22 @@ void TransportUDP::socketUpdate(int events)
       {
         read_cb_(shared_from_this());
       }
+      else
+      {
+        // No read callback is registered, but the socket has data available.
+        // Drain the pending data to prevent poll() from returning immediately
+        // on every iteration, which would turn PollManager::threadFunc into a
+        // busy loop consuming 100% CPU.  See ros/ros_comm#2166.
+        uint8_t drain_buffer[1500];
+        int ret = ::recv(sock_, reinterpret_cast<char*>(drain_buffer), sizeof(drain_buffer), 0);
+        if (ret < 0 && !last_socket_error_is_would_block())
+        {
+          ROSCPP_LOG_DEBUG("recv() on socket [%d] while draining failed: [%s]", sock_, last_socket_error_string());
+          close();
+          return;
+        }
+        ROSCPP_LOG_DEBUG("Discarded %d bytes of unexpected data on UDP socket [%d] (no read callback registered)", ret, sock_);
+      }
     }
 
     if ((events & POLLOUT) && expecting_write_)

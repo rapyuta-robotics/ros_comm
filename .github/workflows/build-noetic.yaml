@@ -1,0 +1,69 @@
+# =============================================================================
+# GitHub Actions: Build patched ROS Noetic Docker image
+# =============================================================================
+
+name: Build Noetic Image
+
+on:
+  push:
+    branches: [main, master, noetic-devel]
+    tags: ['v*']
+  pull_request:
+    branches: [main, master, noetic-devel]
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository_owner }}/ros
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to GitHub Container Registry
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=noetic-patched,enable={{is_default_branch}}
+            type=ref,event=pr,prefix=noetic-pr-
+            type=semver,pattern={{version}},prefix=noetic-
+            type=sha,prefix=noetic-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile
+          build-args: |
+            UBUNTU_DISTRO=focal
+            ROS_DISTRO=noetic
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+      - name: Verify image (on PR)
+        if: github.event_name == 'pull_request'
+        run: |
+          docker compose build noetic
+          docker compose run --rm noetic rosversion roscpp
