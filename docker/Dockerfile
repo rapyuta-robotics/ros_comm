@@ -1,23 +1,32 @@
 # =============================================================================
-# Dockerfile: Build ROS Noetic (or future distros) from ubuntu base with
-# patched ros_comm overlay from this fork.
+# Dockerfile: Build patched ros_comm and overlay onto the slim Rapyuta
+# Noetic base image.
+#
+# Multi-stage build:
+#   Stage 1 (builder) — ubuntu:focal + build tools → compile ros_comm
+#   Stage 2 (runtime) — quay.io/rapyuta/ros:noetic → overlay patched files
 #
 # Build args:
-#   UBUNTU_DISTRO  - Ubuntu release codename (default: focal)
-#   ROS_DISTRO     - ROS distribution name    (default: noetic)
+#   UBUNTU_DISTRO   - Ubuntu release codename         (default: focal)
+#   ROS_DISTRO      - ROS distribution name            (default: noetic)
+#   BASE_IMAGE      - Slim runtime base image          (default: quay.io/rapyuta/ros:noetic)
 #
 # Usage:
 #   docker build -f docker/Dockerfile \
-#     --build-arg UBUNTU_DISTRO=focal --build-arg ROS_DISTRO=noetic \
 #     -t rapyuta/ros:noetic-patched .
 #
-# Extend for Jammy in the future by changing the build args.
 # =============================================================================
 
+# ---- configurable args (before any FROM so they're global) -----------------
 ARG UBUNTU_DISTRO=focal
-FROM ubuntu:${UBUNTU_DISTRO}
+ARG ROS_DISTRO=noetic
+ARG BASE_IMAGE=quay.io/rapyuta/ros:noetic
 
-# Re-declare after FROM so it's available in subsequent stages
+# ===========================================================================
+# Stage 1: Builder — fat image with all build tools
+# ===========================================================================
+FROM ubuntu:${UBUNTU_DISTRO} AS builder
+
 ARG UBUNTU_DISTRO=focal
 ARG ROS_DISTRO=noetic
 
@@ -29,25 +38,22 @@ ENV LC_ALL=C.UTF-8
 SHELL ["/bin/bash", "-o", "pipefail", "-c"]
 
 # ---------------------------------------------------------------------------
-# 1. Install base dependencies & set up ROS apt repository
+# 1. Base dependencies & ROS apt repository
 # ---------------------------------------------------------------------------
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ca-certificates \
         curl \
         gnupg2 \
         lsb-release \
-        software-properties-common \
     && rm -rf /var/lib/apt/lists/*
 
-# Add the ROS apt key and repository
 RUN curl -sSL https://raw.githubusercontent.com/ros/rosdistro/master/ros.asc | apt-key add - \
     && echo "deb http://packages.ros.org/ros/ubuntu ${UBUNTU_DISTRO} main" \
         > /etc/apt/sources.list.d/ros-latest.list
 
 # ---------------------------------------------------------------------------
-# 2. Install ROS base packages & build tooling
+# 2. ROS base + build tools + ros_comm build dependencies
 # ---------------------------------------------------------------------------
-# Install ROS base, build tools, and ros_comm build dependencies
 RUN apt-get update && apt-get install -y --no-install-recommends \
         ros-${ROS_DISTRO}-ros-base \
         build-essential \
@@ -72,41 +78,43 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         libyaml-cpp-dev \
     && rm -rf /var/lib/apt/lists/*
 
-# Initialize rosdep (if not already initialized)
 RUN if [ ! -f /etc/ros/rosdep/sources.list.d/20-default.list ]; then \
         rosdep init; \
     fi \
     && rosdep update --rosdistro ${ROS_DISTRO}
 
 # ---------------------------------------------------------------------------
-# 3. Copy fork source into an overlay catkin workspace
+# 3. Copy source & build into a clean install-space
 # ---------------------------------------------------------------------------
 ENV OVERLAY_WS=/opt/ros_comm_ws
 RUN mkdir -p ${OVERLAY_WS}/src
 COPY . ${OVERLAY_WS}/src/ros_comm
 
-# Install any missing dependencies via rosdep
 WORKDIR ${OVERLAY_WS}
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     && rosdep install --from-paths src --ignore-src -r -y 2>/dev/null || true
 
-# ---------------------------------------------------------------------------
-# 4. Build the overlay — install directly into /opt/ros/${ROS_DISTRO} so
-#    patched libraries (e.g. libroscpp.so) replace the distro versions.
-#    Downstream images just need to source /opt/ros/${ROS_DISTRO}/setup.bash.
-# ---------------------------------------------------------------------------
+# Build and install into a SEPARATE prefix so we can cherry-pick files later.
+# Using /opt/ros_comm_install avoids mixing with system ros packages.
 RUN . /opt/ros/${ROS_DISTRO}/setup.sh \
     && catkin_make_isolated \
         --install \
-        --install-space /opt/ros/${ROS_DISTRO} \
+        --install-space /opt/ros_comm_install \
         -DCMAKE_BUILD_TYPE=Release \
     && rm -rf ${OVERLAY_WS}/build_isolated ${OVERLAY_WS}/devel_isolated
 
-# ---------------------------------------------------------------------------
-# 5. Entrypoint
-# ---------------------------------------------------------------------------
-COPY docker/ros_entrypoint.sh /ros_entrypoint.sh
-RUN chmod +x /ros_entrypoint.sh
+# ===========================================================================
+# Stage 2: Runtime — slim image with only the patched overlay
+# ===========================================================================
+FROM ${BASE_IMAGE} AS runtime
+
+ARG ROS_DISTRO=noetic
+
+# Copy the entire patched install-space over the system ROS install.
+# This overlays patched libraries (libroscpp.so, etc.), headers, Python
+# packages, and package metadata on top of whatever the base image ships.
+COPY --from=builder /opt/ros_comm_install/ /opt/ros/${ROS_DISTRO}/
+
 
 ENTRYPOINT ["/ros_entrypoint.sh"]
 CMD ["bash"]

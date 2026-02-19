@@ -2,6 +2,8 @@
 
 Forked from [ros/ros_comm](https://github.com/ros/ros_comm) to maintain patches for ROS Noetic after its upstream EOL (May 2025).
 
+> **Upstream sync:** This fork is synced with [`ros/ros_comm:noetic-devel`](https://github.com/ros/ros_comm/tree/noetic-devel) up to the final release (1.17.4, EOL notice commit `30483a9`).
+
 ## Patches
 
 ### Fix: roscpp PollManager busy loop on unexpected UDP traffic ([#2166](https://github.com/ros/ros_comm/issues/2166))
@@ -16,7 +18,12 @@ If any unexpected UDP traffic arrives on that port, the data sits unread in the 
 
 ## Building the Patched Docker Image
 
-This repo includes a Dockerfile based on `ubuntu:focal` that installs ROS Noetic from the official apt repositories, then builds this fork's packages as an overlay — replacing the system-installed `roscpp` (and other ros_comm packages) with the patched versions.
+This repo uses a **multi-stage Dockerfile** to keep the final image slim:
+
+1. **Builder stage** (`ubuntu:focal`) — installs ROS Noetic + build tools, compiles this fork's `ros_comm` packages into a clean install prefix.
+2. **Runtime stage** (`quay.io/rapyuta/ros:noetic`, ~935MB) — copies only the patched binaries/libraries/Python packages on top of the existing slim base image.
+
+The result is an image of ~950MB (vs 2.35GB for a single-stage build), making it a **drop-in replacement** for `quay.io/rapyuta/ros:noetic`.
 
 ### Prerequisites
 
@@ -41,13 +48,15 @@ docker build -f docker/Dockerfile \
 
 ### Using as a Base Image
 
+Drop-in replacement for `quay.io/rapyuta/ros:noetic` in downstream Dockerfiles:
+
 ```dockerfile
+# Before (in e.g. rr_io_amr/docker/base.Dockerfile):
+# FROM quay.io/rapyuta/ros:noetic
+# After:
 FROM rapyuta/ros:noetic-patched
 
-# Your ROS workspace setup here
-RUN mkdir -p /catkin_ws/src
-WORKDIR /catkin_ws
-# ...
+# Everything else stays the same — same layout, same paths
 ```
 
 ## Extending for Jammy
