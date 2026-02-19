@@ -2,6 +2,46 @@
 Changelog for package roslaunch
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.4 (2025-05-19)
+-------------------
+
+1.17.3 (2025-05-09)
+-------------------
+* Fixes for Python 3.12 (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Contributors: Matthias Klose
+
+1.17.2 (2025-05-02)
+-------------------
+
+1.17.1 (2025-04-26)
+-------------------
+* [roslaunch] raise `ArgException` in `_arg_tag` to avoid unexpected error in `roslaunch.config.load_config_default` (`#2371 <https://github.com/ros/ros_comm/issues/2371>`_)
+* Contributors: Shingo Kitagawa
+
+1.17.0 (2024-09-13)
+-------------------
+* Check if ignore_unset_args is set in xmlloader (`#2217 <https://github.com/ros/ros_comm/issues/2217>`_)
+* Remove Python 2 on Windows workaround (`#2364 <https://github.com/ros/ros_comm/issues/2364>`_)
+* Contributors: Griffin Tabor, Shingo Kitagawa
+
+1.16.0 (2023-02-15)
+-------------------
+
+1.15.15 (2022-11-23)
+--------------------
+* Move @jacobperron from maintainer to author (`#2302 <https://github.com/ros/ros_comm/issues/2302>`_)
+* Fix $(dirname) resolution in include tags (`#2173 <https://github.com/ros/ros_comm/issues/2173>`_)
+* Contributors: Robert Haschke, Shane Loretz
+
+1.15.14 (2022-01-06)
+--------------------
+
+1.15.13 (2021-09-22)
+--------------------
+
+1.15.12 (2021-09-21)
+--------------------
+
 1.15.11 (2021-04-06)
 --------------------
 

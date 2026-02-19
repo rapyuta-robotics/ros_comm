@@ -302,8 +302,8 @@ class XmlLoader(loader.Loader):
             
             context.add_arg(name, value=value, default=default, doc=doc)
 
-        except substitution_args.ArgException as e:
-            raise XmlParseException(
+        except ArgException as e:
+            raise ArgException(
                 "arg '%s' is not defined. \n\nArg xml is %s"%(e, tag.toxml()))
         except ResourceNotFound as e:
             raise ResourceNotFound(
@@ -613,6 +613,7 @@ class XmlLoader(loader.Loader):
             # error on) attempts to set the same arg twice.
             child_ns.pass_all_args = True
 
+        child_ns.filename = context.filename  # evaluate substitutions w.r.t. parent filename
         for t in [c for c in tag.childNodes if c.nodeType == DomNode.ELEMENT_NODE]:
             tag_name = t.tagName.lower()
             if tag_name == 'env':
@@ -621,6 +622,7 @@ class XmlLoader(loader.Loader):
                 self._arg_tag(t, child_ns, ros_config, verbose=verbose)
             else:
                 print("WARN: unrecognized '%s' tag in <%s> tag"%(t.tagName, tag.tagName), file=sys.stderr)
+        child_ns.filename = inc_filename  # restore filename
 
         # setup arg passing
         loader.process_include_args(child_ns)
@@ -638,7 +640,7 @@ class XmlLoader(loader.Loader):
                 loader.post_process_include_args(child_ns)
 
         except ArgException as e:
-            if not self.ignore_unset_args:
+            if not (hasattr(self, 'ignore_unset_args') and self.ignore_unset_args):
                 raise XmlParseException("included file [%s] requires the '%s' arg to be set"%(inc_filename, str(e)))
         except XmlParseException as e:
             raise XmlParseException("while processing %s:\n%s"%(inc_filename, str(e)))
@@ -760,7 +762,7 @@ class XmlLoader(loader.Loader):
             ros_config.add_roslaunch_file(filename)            
             self._load_launch(launch, ros_config, is_core=core, filename=filename, argv=argv, verbose=verbose)
         except ArgException as e:
-            if not self.ignore_unset_args:
+            if not (hasattr(self, 'ignore_unset_args') and self.ignore_unset_args):
                 raise XmlParseException("[%s] requires the '%s' arg to be set"%(filename, str(e)))
         except SubstitutionException as e:
             raise XmlParseException(str(e))

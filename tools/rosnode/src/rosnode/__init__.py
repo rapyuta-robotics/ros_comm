@@ -359,6 +359,7 @@ def rosnode_ping(node_name, max_count=None, verbose=False, skip_cache=False):
                             if verbose:
                                 print("node url has changed from [%s] to [%s], retrying to ping"%(node_api, new_node_api))
                             node_api = new_node_api
+                            node.__exit__()
                             node = ServerProxy(node_api)
                             continue
                         print("ERROR: connection refused to [%s]"%(node_api), file=sys.stderr)
@@ -373,7 +374,9 @@ def rosnode_ping(node_name, max_count=None, verbose=False, skip_cache=False):
             time.sleep(1.0)
     except KeyboardInterrupt:
         pass
-            
+    finally:
+        node.__exit__()
+
     if verbose and count > 1:
         print("ping average: %fms"%(acc/count))
     return True
@@ -498,7 +501,7 @@ def get_node_info_description(node_name):
     # go through the master system state first
     try:
         state = master.getSystemState()
-        pub_topics = master.getPublishedTopics('/')
+        topic_types = master.getTopicTypes()
     except socket.error:
         raise ROSNodeIOException("Unable to communicate with master!")
     pubs = sorted([t for t, l in state[0] if node_name in l])
@@ -508,12 +511,12 @@ def get_node_info_description(node_name):
     buff = "Node [%s]"%node_name
     if pubs:
         buff += "\nPublications: \n"
-        buff += '\n'.join([" * %s [%s]"%(l, topic_type(l, pub_topics)) for l in pubs]) + '\n'
+        buff += '\n'.join([" * %s [%s]"%(l, topic_type(l, topic_types)) for l in pubs]) + '\n'
     else:
         buff += "\nPublications: None\n"
     if subs:
         buff += "\nSubscriptions: \n"
-        buff += '\n'.join([" * %s [%s]"%(l, topic_type(l, pub_topics)) for l in subs]) + '\n'
+        buff += '\n'.join([" * %s [%s]"%(l, topic_type(l, topic_types)) for l in subs]) + '\n'
     else:
         buff += "\nSubscriptions: None\n"        
     if srvs:

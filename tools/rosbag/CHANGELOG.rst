@@ -2,6 +2,52 @@
 Changelog for package rosbag
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.4 (2025-05-19)
+-------------------
+
+1.17.3 (2025-05-09)
+-------------------
+* Update header for Boost 1.83 (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Contributors: Jochen Sprickerhof
+
+1.17.2 (2025-05-02)
+-------------------
+
+1.17.1 (2025-04-26)
+-------------------
+* Sort connection indices (`#2089 <https://github.com/ros/ros_comm/issues/2089>`_)
+* Ensure latched messages are updated on every split (`#2261 <https://github.com/ros/ros_comm/issues/2261>`_)
+* Contributors: Gal Gorjup, Marko Durkovic
+
+1.17.0 (2024-09-13)
+-------------------
+* Exposed record snapshot feature to command line. (`#2254 <https://github.com/ros/ros_comm/issues/2254>`_)
+* Fix rosbag calling uncallable signal handler object (`#2236 <https://github.com/ros/ros_comm/issues/2236>`_)
+* Add --min-space option to the python cli of rosbag record (`#2298 <https://github.com/ros/ros_comm/issues/2298>`_)
+* Fix latched topic not latched in splitted rosbags (`#2351 <https://github.com/ros/ros_comm/issues/2351>`_)
+* Enable building with boost 1.83.0 (`#2354 <https://github.com/ros/ros_comm/issues/2354>`_)
+* Contributors: Blake Anderson, Hugal31, Yannik Nager, Zijun Xu, daizhirui
+
+1.16.0 (2023-02-15)
+-------------------
+* add missing repeat_latched initialization (`#2314 <https://github.com/ros/ros_comm/issues/2314>`_)
+* Contributors: Robin Vanhove
+
+1.15.15 (2022-11-23)
+--------------------
+* Move @jacobperron from maintainer to author (`#2302 <https://github.com/ros/ros_comm/issues/2302>`_)
+* Fix rosbag reindex not seeking to truncated position after broken chunk (`#2286 <https://github.com/ros/ros_comm/issues/2286>`_)
+* Contributors: Emerson Knapp, Shane Loretz
+
+1.15.14 (2022-01-06)
+--------------------
+
+1.15.13 (2021-09-22)
+--------------------
+
+1.15.12 (2021-09-21)
+--------------------
+
 1.15.11 (2021-04-06)
 --------------------
 * Handle SIGINT in rosbag play (`#2150 <https://github.com/ros/ros_comm/issues/2150>`_)
