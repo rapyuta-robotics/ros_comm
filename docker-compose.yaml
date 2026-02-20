@@ -19,17 +19,6 @@ services:
     environment:
       - ROS_DISTRO=noetic
 
-  # Self-contained image — no dependency on quay.io/rapyuta/ros:noetic
-  noetic-standalone:
-    build:
-      context: .
-      dockerfile: docker/Dockerfile.standalone
-      args:
-        UBUNTU_DISTRO: focal
-        ROS_DISTRO: noetic
-    image: rapyuta/ros:noetic-standalone
-    environment:
-      - ROS_DISTRO=noetic
 
   # ---------------------------------------------------------------------------
   # Placeholder for future Jammy-based builds.
