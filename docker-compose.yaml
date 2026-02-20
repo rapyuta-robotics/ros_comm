@@ -1,0 +1,37 @@
+# =============================================================================
+# docker-compose.yaml — Build patched ROS images from this fork
+#
+# Usage:
+#   docker compose build noetic
+#   docker compose run --rm noetic bash
+# =============================================================================
+
+services:
+  noetic:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      args:
+        UBUNTU_DISTRO: focal
+        ROS_DISTRO: noetic
+        BASE_IMAGE: quay.io/rapyuta/ros:noetic
+    image: rapyuta/ros:noetic-patched
+    environment:
+      - ROS_DISTRO=noetic
+
+
+  # ---------------------------------------------------------------------------
+  # Placeholder for future Jammy-based builds.
+  # Uncomment and adjust when adding Jammy support (e.g. ROS 2 Humble or a
+  # community Noetic-on-Jammy port).
+  # ---------------------------------------------------------------------------
+  # jammy:
+  #   build:
+  #     context: .
+  #     dockerfile: docker/Dockerfile
+  #     args:
+  #       UBUNTU_DISTRO: jammy
+  #       ROS_DISTRO: humble   # or a custom noetic-jammy target
+  #   image: rapyuta/ros:humble-patched
+  #   environment:
+  #     - ROS_DISTRO=humble

@@ -2,6 +2,51 @@
 Changelog for package rospy
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.4 (2025-05-19)
+-------------------
+
+1.17.3 (2025-05-09)
+-------------------
+
+1.17.2 (2025-05-02)
+-------------------
+
+1.17.1 (2025-04-26)
+-------------------
+* wait_for_topic support topic remapping (`#2159 <https://github.com/ros/ros_comm/issues/2159>`_)
+* support `rosbag play --loop` in `rospy.Timer` (`#2257 <https://github.com/ros/ros_comm/issues/2257>`_)
+* Add bool return to _base_logger, log* functions (`#2335 <https://github.com/ros/ros_comm/issues/2335>`_)
+* Contributors: Michael Görner, Owen Claxton, sean85914
+
+1.17.0 (2024-09-13)
+-------------------
+* Stop using deprecated logger.warn (`#2191 <https://github.com/ros/ros_comm/issues/2191>`_)
+* Expose is_shutdown_requested in rospy module. (`#2267 <https://github.com/ros/ros_comm/issues/2267>`_)
+* Fix error "s is not defined" (`#2328 <https://github.com/ros/ros_comm/issues/2328>`_)
+* Contributors: Guglielmo Gemignani, Michael Grupp, vineet131
+
+1.16.0 (2023-02-15)
+-------------------
+
+1.15.15 (2022-11-23)
+--------------------
+* Move @jacobperron from maintainer to author (`#2302 <https://github.com/ros/ros_comm/issues/2302>`_)
+* Add a workaround for a race condition while closing the socket (`#2212 <https://github.com/ros/ros_comm/issues/2212>`_) (`#2233 <https://github.com/ros/ros_comm/issues/2233>`_)
+* Contributors: Shane Loretz, Daniele Calisi, madmage
+
+1.15.14 (2022-01-06)
+--------------------
+
+1.15.13 (2021-09-22)
+--------------------
+
+1.15.12 (2021-09-21)
+--------------------
+* Document current_real in timer.py (`#2178 <https://github.com/ros/ros_comm/issues/2178>`_)
+* Do not set self.transport unless persistent in ServiceProxy (`#2171 <https://github.com/ros/ros_comm/issues/2171>`_)
+* Fix `#2123 <https://github.com/ros/ros_comm/issues/2123>`_:  Do not raise exception if socket is busy in TCPROSTransport (`#2131 <https://github.com/ros/ros_comm/issues/2131>`_)
+* Contributors: Kevin Chang, Shingo Kitagawa, 金梦磊
+
 1.15.11 (2021-04-06)
 --------------------
 

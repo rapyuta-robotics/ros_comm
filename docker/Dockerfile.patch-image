@@ -1,0 +1,34 @@
+# =============================================================================
+# Dockerfile.patch-image
+#
+# Patch an existing Docker image by replacing libroscpp.so with the
+# version from an already-built patched image (no recompilation needed).
+#
+# Multi-stage:
+#   Stage 1 (source)  — pull the image that has the patched libroscpp.so
+#   Stage 2 (patched) — take TARGET_IMAGE, swap in libroscpp.so from source
+#
+# Build args:
+#   PATCH_SOURCE_IMAGE - Image containing the patched libroscpp.so
+#                        (e.g. quay.io/rapyuta/ros:noetic-patched)
+#   TARGET_IMAGE       - The image to patch (e.g. quay.io/rapyuta/ros:noetic-abc)
+#   ROS_DISTRO         - ROS distribution name (default: noetic)
+# =============================================================================
+
+ARG PATCH_SOURCE_IMAGE
+ARG TARGET_IMAGE
+
+# ===========================================================================
+# Stage 1: Source — image that already has the patched libroscpp.so
+# ===========================================================================
+FROM ${PATCH_SOURCE_IMAGE} AS source
+
+# ===========================================================================
+# Stage 2: Patch the target image — swap only libroscpp.so
+# ===========================================================================
+FROM ${TARGET_IMAGE} AS patched
+
+ARG ROS_DISTRO=noetic
+
+# Copy ONLY libroscpp.so from the source image (not the entire overlay)
+COPY --from=source /opt/ros/${ROS_DISTRO}/lib/libroscpp.so /opt/ros/${ROS_DISTRO}/lib/libroscpp.so

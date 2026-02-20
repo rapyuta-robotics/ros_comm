@@ -2,6 +2,46 @@
 Changelog for package topic_tools
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.4 (2025-05-19)
+-------------------
+
+1.17.3 (2025-05-09)
+-------------------
+* Fixes for Python 3.12 (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Contributors: Matthias Klose
+
+1.17.2 (2025-05-02)
+-------------------
+
+1.17.1 (2025-04-26)
+-------------------
+* Update topic_tools relay_field to Python 3 (`#2253 <https://github.com/ros/ros_comm/issues/2253>`_)
+* Fix error C3861: 'usleep': identifier not found on Windows (`#2383 <https://github.com/ros/ros_comm/issues/2383>`_)
+* Contributors: RyanDMott, Tobias Fischer
+
+1.17.0 (2024-09-13)
+-------------------
+* Add wait_publisher_initialization option in topic_tools mux (`#2305 <https://github.com/ros/ros_comm/issues/2305>`_)
+* Contributors: Shingo Kitagawa
+
+1.16.0 (2023-02-15)
+-------------------
+
+1.15.15 (2022-11-23)
+--------------------
+* Move @jacobperron from maintainer to author (`#2302 <https://github.com/ros/ros_comm/issues/2302>`_)
+* Set TCP_NODELAY. (`#2293 <https://github.com/ros/ros_comm/issues/2293>`_)
+* Contributors: Rik Baehnemann, Shane Loretz
+
+1.15.14 (2022-01-06)
+--------------------
+
+1.15.13 (2021-09-22)
+--------------------
+
+1.15.12 (2021-09-21)
+--------------------
+
 1.15.11 (2021-04-06)
 --------------------
 

@@ -34,11 +34,6 @@ if(TARGET test_dispatch_live)
   target_link_libraries(test_dispatch_live xmlrpcpp test_fixtures ${Boost_LIBRARIES})
 endif()
 
-catkin_add_gtest(test_ulimit test_ulimit.cpp)
-if(TARGET test_ulimit)
-  target_link_libraries(test_ulimit xmlrpcpp test_fixtures ${Boost_LIBRARIES})
-endif()
-
 add_library(mock_socket mock_socket.cpp)
 target_link_libraries(mock_socket ${GTEST_LIBRARIES})
 set_target_properties(mock_socket PROPERTIES EXCLUDE_FROM_ALL TRUE)
@@ -104,16 +99,18 @@ if(NOT WIN32)
     ../src/XmlRpcSocket.cpp
     ../src/XmlRpcUtil.cpp
   )
-  if(APPLE)
-    set_target_properties(test_socket PROPERTIES
-      LINK_FLAGS
-      "-Wl,-alias,___wrap_accept,_accept -Wl,-alias,___wrap_bind,_bind -Wl,-alias,___wrap_close,_close -Wl,-alias,___wrap_connect,_connect -Wl,-alias,___wrap_getaddrinfo,_getaddrinfo -Wl,-alias,___wrap_getsockname,_getsockname -Wl,-alias,___wrap_listen,_listen -Wl,-alias,___wrap_read,_read -Wl,-alias,___wrap_setsockopt,_setsockopt -Wl,-alias,___wrap_select,_select -Wl,-alias,___wrap_select,_select$1050 -Wl,-alias,___wrap_socket,_socket -Wl,-alias,___wrap_write,_write -Wl,-alias,___wrap_fcntl,_fcntl -Wl,-alias,___wrap_freeaddrinfo,_freeaddrinfo"
-    )
-  elseif(UNIX)
-    set_target_properties(test_socket PROPERTIES
-      LINK_FLAGS
-      "-Wl,--wrap=accept -Wl,--wrap=bind -Wl,--wrap=close -Wl,--wrap=connect -Wl,--wrap=getaddrinfo -Wl,--wrap=getsockname -Wl,--wrap=listen -Wl,--wrap=read -Wl,--wrap=setsockopt -Wl,--wrap=select -Wl,--wrap=socket -Wl,--wrap=write -Wl,--wrap=fcntl -Wl,--wrap=freeaddrinfo"
-    )
+  if(TARGET test_socket)
+    if(APPLE)
+      set_target_properties(test_socket PROPERTIES
+        LINK_FLAGS
+        "-Wl,-alias,___wrap_accept,_accept -Wl,-alias,___wrap_bind,_bind -Wl,-alias,___wrap_close,_close -Wl,-alias,___wrap_connect,_connect -Wl,-alias,___wrap_getaddrinfo,_getaddrinfo -Wl,-alias,___wrap_getsockname,_getsockname -Wl,-alias,___wrap_listen,_listen -Wl,-alias,___wrap_read,_read -Wl,-alias,___wrap_setsockopt,_setsockopt -Wl,-alias,___wrap_select,_select -Wl,-alias,___wrap_select,_select$1050 -Wl,-alias,___wrap_socket,_socket -Wl,-alias,___wrap_write,_write -Wl,-alias,___wrap_fcntl,_fcntl -Wl,-alias,___wrap_freeaddrinfo,_freeaddrinfo"
+      )
+    elseif(UNIX)
+      set_target_properties(test_socket PROPERTIES
+        LINK_FLAGS
+        "-Wl,--wrap=accept -Wl,--wrap=bind -Wl,--wrap=close -Wl,--wrap=connect -Wl,--wrap=getaddrinfo -Wl,--wrap=getsockname -Wl,--wrap=listen -Wl,--wrap=read -Wl,--wrap=setsockopt -Wl,--wrap=select -Wl,--wrap=socket -Wl,--wrap=write -Wl,--wrap=fcntl -Wl,--wrap=freeaddrinfo"
+      )
+    endif()
   endif()
 endif()
 

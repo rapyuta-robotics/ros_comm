@@ -2,6 +2,47 @@
 Changelog for package rosgraph
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.4 (2025-05-19)
+-------------------
+
+1.17.3 (2025-05-09)
+-------------------
+* Fixes for Python 3.12 (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* rosgraph: update code from Python 3.11 (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Contributors: Jochen Sprickerhof, Matthias Klose
+
+1.17.2 (2025-05-02)
+-------------------
+
+1.17.1 (2025-04-26)
+-------------------
+
+1.17.0 (2024-09-13)
+-------------------
+* Fixed ROSCONSOLE_FORMAT with microseconds (`#2370 <https://github.com/ros/ros_comm/issues/2370>`_)
+* Contributors: Martin Pecka
+
+1.16.0 (2023-02-15)
+-------------------
+* Fix determining supported kernel version for HTTP 1.1 (`#2202 <https://github.com/ros/ros_comm/issues/2202>`_)
+* Contributors: Martin Pecka
+
+1.15.15 (2022-11-23)
+--------------------
+* Move @jacobperron from maintainer to author (`#2302 <https://github.com/ros/ros_comm/issues/2302>`_)
+* Contributors: Shane Loretz
+
+1.15.14 (2022-01-06)
+--------------------
+
+1.15.13 (2021-09-22)
+--------------------
+
+1.15.12 (2021-09-21)
+--------------------
+* Fix memory leak in rosgraph for kernel < 4.16 and Python 3 (`#2165 <https://github.com/ros/ros_comm/issues/2165>`_)
+* Contributors: Alexis Schad
+
 1.15.11 (2021-04-06)
 --------------------
 

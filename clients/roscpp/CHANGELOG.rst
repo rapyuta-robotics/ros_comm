@@ -2,6 +2,52 @@
 Changelog for package roscpp
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+1.17.4 (2025-05-19)
+-------------------
+
+1.17.3 (2025-05-09)
+-------------------
+* adding boost/bind/bind.hpp includes to files missing them (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Fix "roscpp multithreaded spinners eat up CPU when callbacks take too long" (`#2377 <https://github.com/ros/ros_comm/issues/2377>`_) (`#2388 <https://github.com/ros/ros_comm/pull/2388>`_)
+* Contributors: Johannes Meyer, Lucas Walter
+
+1.17.2 (2025-05-02)
+-------------------
+
+1.17.1 (2025-04-26)
+-------------------
+
+1.17.0 (2024-09-13)
+-------------------
+* Make build compatible with boost 1.73 (`#2348 <https://github.com/ros/ros_comm/issues/2348>`_)
+* Added init_options::NoSimTime which disables subscribing to /clock (`#2342 <https://github.com/ros/ros_comm/issues/2342>`_)
+* Fix crash during shutdown when explicitly calling ros::start but not ros::shutdown (`#2355 <https://github.com/ros/ros_comm/issues/2355>`_)
+* Contributors: David Gossow, Martin Pecka, Robert Haschke
+
+1.16.0 (2023-02-15)
+-------------------
+
+1.15.15 (2022-11-23)
+--------------------
+* Move @jacobperron from maintainer to author (`#2302 <https://github.com/ros/ros_comm/issues/2302>`_)
+* Contributors: Shane Loretz
+
+1.15.14 (2022-01-06)
+--------------------
+* Use recursive mutex to fix dead lock (`#2209 <https://github.com/ros/ros_comm/issues/2209>`_)
+* Contributors: Chen Lihui
+
+1.15.13 (2021-09-22)
+--------------------
+* Revert "Fix warning related to Boost bind placeholders declared in global namespace. (`#2169 <https://github.com/ros/ros_comm/issues/2169>`_)" (`#2187 <https://github.com/ros/ros_comm/issues/2187>`_)
+  This reverts commit 32942993e3f9afc8248be7b1f5944344fa2b4e30.
+* Contributors: Jacob Perron
+
+1.15.12 (2021-09-21)
+--------------------
+* Fix warning related to Boost bind placeholders declared in global namespace (`#2169 <https://github.com/ros/ros_comm/issues/2169>`_)
+* Contributors: Elvis Dowson
+
 1.15.11 (2021-04-06)
 --------------------
 

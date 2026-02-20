@@ -1,0 +1,68 @@
+# =============================================================================
+# GitHub Actions: Build patched ROS Noetic Docker image
+# =============================================================================
+
+name: Build Noetic Image
+
+on:
+  push:
+    branches: [rr-devel]
+    tags: ['v*']
+  pull_request:
+    branches: [rr-devel]
+
+env:
+  REGISTRY: quay.io
+  IMAGE_NAME: rapyuta/ros
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU (for multi-arch builds)
+        uses: docker/setup-qemu-action@v3
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to Quay.io
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USER }}
+          password: ${{ secrets.QUAY_PASS }}
+
+      - name: Extract Docker metadata
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          tags: |
+            type=raw,value=noetic-patched,enable={{is_default_branch}}
+            type=ref,event=pr,prefix=noetic-pr-
+            type=semver,pattern={{version}},prefix=noetic-
+            type=sha,prefix=noetic-
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: docker/Dockerfile
+          platforms: linux/amd64,linux/arm64
+          build-args: |
+            UBUNTU_DISTRO=focal
+            ROS_DISTRO=noetic
+            BASE_IMAGE=quay.io/rapyuta/ros:noetic
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
