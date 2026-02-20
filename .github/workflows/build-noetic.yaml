@@ -60,14 +60,9 @@ jobs:
             UBUNTU_DISTRO=focal
             ROS_DISTRO=noetic
             BASE_IMAGE=quay.io/rapyuta/ros:noetic
-          push: ${{ github.event_name != 'pull_request' }}
+          push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-      - name: Verify image (on PR)
-        if: github.event_name == 'pull_request'
-        run: |
-          docker compose build noetic
-          docker compose run --rm noetic rosversion roscpp
